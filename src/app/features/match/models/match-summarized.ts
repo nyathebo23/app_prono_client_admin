@@ -1,0 +1,5 @@
+class MatchSummarized {
+    constructor(){
+        
+    }
+}

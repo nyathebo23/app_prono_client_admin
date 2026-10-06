@@ -1,12 +1,19 @@
-import { Component, signal } from '@angular/core';
+import { CommonModule, Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { PrimeNG } from 'primeng/config';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss'],
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('sportPredictAdmin');
+  primeng = inject(PrimeNG);
+
+  ngOnInit(): void {
+    this.primeng.ripple.set(true);
+  }
 }
