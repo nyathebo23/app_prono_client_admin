@@ -1,0 +1,115 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4">
+  <div class="w-full max-w-xl rounded-xl border border-slate-200 bg-white shadow-lg">
+    <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+      <h3 class="text-lg font-semibold text-slate-800">Modification d'équipe</h3>
+      <button
+        type="button"
+        (click)="closeDialog()"
+        class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+        aria-label="Fermer le dialogue"
+      >
+        <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <form [formRoot]="teamForm" class="space-y-5 p-5" novalidate>
+      <p class="text-sm text-slate-500">Modifiez les informations de l'équipe.</p>
+
+      @if (error()) {
+        <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      <div>
+        <label for="update-team-name" class="mb-1.5 block text-sm font-semibold text-slate-700">Nom de l'équipe</label>
+        <input
+          id="update-team-name"
+          type="text"
+          [formField]="teamForm.name"
+          [class.border-red-500]="teamForm.name().dirty() && teamForm.name().errors().length > 0"
+          [class.bg-red-50]="teamForm.name().dirty() && teamForm.name().errors().length > 0"
+          [attr.aria-invalid]="teamForm.name().dirty() && teamForm.name().errors().length > 0"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          placeholder="Nom de l'équipe"
+        />
+        @if (teamForm.name().dirty()) {
+          @for (validationError of teamForm.name().errors(); track validationError) {
+            <p class="mt-1 text-xs font-medium text-red-600">{{ validationError.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label for="update-country" class="mb-1.5 block text-sm font-semibold text-slate-700">Pays</label>
+          <select
+            id="update-country"
+            [formField]="teamForm.countryCode"
+            [class.border-red-500]="teamForm.countryCode().dirty() && teamForm.countryCode().errors().length > 0"
+            [class.bg-red-50]="teamForm.countryCode().dirty() && teamForm.countryCode().errors().length > 0"
+            [attr.aria-invalid]="teamForm.countryCode().dirty() && teamForm.countryCode().errors().length > 0"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Choisir un pays</option>
+            @for (country of countries; track country.code) {
+              <option [value]="country.code">{{ country.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="update-team-kind" class="mb-1.5 block text-sm font-semibold text-slate-700">Type d'équipe</label>
+          <select
+            id="update-team-kind"
+            [formField]="teamForm.teamKind"
+            [class.border-red-500]="teamForm.teamKind().dirty() && teamForm.teamKind().errors().length > 0"
+            [class.bg-red-50]="teamForm.teamKind().dirty() && teamForm.teamKind().errors().length > 0"
+            [attr.aria-invalid]="teamForm.teamKind().dirty() && teamForm.teamKind().errors().length > 0"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Choisir un type</option>
+            @for (teamKind of teamKinds; track teamKind.value) {
+              <option [value]="teamKind.value">{{ teamKind.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="update-player-sex" class="mb-1.5 block text-sm font-semibold text-slate-700">Sexe des joueurs</label>
+        <select
+          id="update-player-sex"
+          [formField]="teamForm.playerSex"
+          [class.border-red-500]="teamForm.playerSex().dirty() && teamForm.playerSex().errors().length > 0"
+          [class.bg-red-50]="teamForm.playerSex().dirty() && teamForm.playerSex().errors().length > 0"
+          [attr.aria-invalid]="teamForm.playerSex().dirty() && teamForm.playerSex().errors().length > 0"
+          class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          @for (playerSex of playerSexes; track playerSex.value) {
+            <option [value]="playerSex.value">{{ playerSex.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
+        <button
+          type="button"
+          (click)="closeDialog()"
+          class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          [disabled]="teamForm().submitting() || isLoading()"
+          class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+        >
+          {{ isLoading() ? 'Enregistrement…' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

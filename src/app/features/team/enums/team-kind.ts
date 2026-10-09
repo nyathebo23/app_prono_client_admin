@@ -1,4 +1,9 @@
 export enum TeamKind {
-    NATIONAL,
-    CLUB
+    NATIONAL = 'NATIONAL',
+    CLUB = 'CLUB'
 }
+
+export const teamKinds = [
+  { value: TeamKind.CLUB, label: 'Club' },
+  { value: TeamKind.NATIONAL, label: 'Equipe nationale' },
+];

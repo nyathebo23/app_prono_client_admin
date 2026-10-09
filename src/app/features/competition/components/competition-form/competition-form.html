@@ -1,1 +1,193 @@
-<p>competition-form works!</p>
+
+<section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div class="border-b border-blue-800 bg-blue-700 px-5 py-4 text-white">
+    <h3 class="text-lg font-semibold">Nouvelle compétition</h3>
+    <p class="mt-1 text-sm text-blue-100">Renseignez les informations de la compétition.</p>
+  </div>
+
+    <form [formRoot]="competitionForm" class="space-y-5 p-5" novalidate>
+      @if (error()) {
+        <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      <div class="grid gap-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div>
+          <label for="name" class="mb-1.5 block text-sm font-semibold text-slate-700">Nom de la compétition</label>
+          <input
+            id="name"
+            type="text"
+            [formField]="competitionForm.name"
+            [class.border-red-500]="competitionForm.name().dirty() && competitionForm.name().errors().length > 0"
+            [class.bg-red-50]="competitionForm.name().dirty() && competitionForm.name().errors().length > 0"
+            [attr.aria-invalid]="competitionForm.name().dirty() && competitionForm.name().errors().length > 0"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            placeholder="Coupe du monde"
+          />
+          @if (competitionForm.name().dirty()) {
+            @for (error of competitionForm.name().errors(); track error) {
+              <p class="text-xs text-red-500 font-medium">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div>
+          <label for="country" class="mb-1.5 block text-sm font-semibold text-slate-700">Pays</label>
+          <select
+            id="country"
+            [formField]="competitionForm.countryCode"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Aucun</option>
+            @for (country of countries; track country.code) {
+              <option [value]="country.code">{{ country.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="teams-count" class="mb-1.5 block text-sm font-semibold text-slate-700">Nombre d'équipes</label>
+          <input
+            id="teams-count"
+            type="number"
+            [formField]="competitionForm.numberOfTeams"
+            [class.border-red-500]="competitionForm.numberOfTeams().dirty() && competitionForm.numberOfTeams().errors().length > 0"
+            [class.bg-red-50]="competitionForm.numberOfTeams().dirty() && competitionForm.numberOfTeams().errors().length > 0"
+            [attr.aria-invalid]="competitionForm.numberOfTeams().dirty() && competitionForm.numberOfTeams().errors().length > 0"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            placeholder="16"
+          />
+          @if (competitionForm.numberOfTeams().dirty()) {
+            @for (error of competitionForm.numberOfTeams().errors(); track error) {
+              <p class="text-xs text-red-500 font-medium">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div>
+          <label for="participant-kind" class="mb-1.5 block text-sm font-semibold text-slate-700">Type d'équipes</label>
+          <select
+            id="participant-kind"
+            [formField]="competitionForm.participantKind"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Choisir le type d' équipes</option>
+            @for (item of participantKinds; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="scope" class="mb-1.5 block text-sm font-semibold text-slate-700">Portée de la compétition</label>
+          <select
+            id="scope"
+            [formField]="competitionForm.scope"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Choisir la portée</option>
+            @for (item of competitionScopes; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="type" class="mb-1.5 block text-sm font-semibold text-slate-700">Type de compétition</label>
+          <select
+            id="type"
+            [formField]="competitionForm.type"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Choisir le type</option>
+            @for (item of competitionTypes; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="phase" class="mb-1.5 block text-sm font-semibold text-slate-700">Phase</label>
+          <select
+            id="phase"
+            [formField]="competitionForm.phase"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            <option value="">Aucune</option>
+            @for (item of competitionPhases; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="player-sex" class="mb-1.5 block text-sm font-semibold text-slate-700">Sexe</label>
+          <select
+            id="player-sex"
+            [formField]="competitionForm.playerSex"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          >
+            @for (item of playerSexes; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="start-datetime" class="mb-1.5 block text-sm font-semibold text-slate-700">Date de début</label>
+          <input
+            id="start-datetime"
+            type="datetime-local"
+            [formField]="competitionForm.startDatetime"
+            [class.border-red-500]="competitionForm.startDatetime().dirty() && competitionForm.startDatetime().errors().length > 0"
+            [class.bg-red-50]="competitionForm.startDatetime().dirty() && competitionForm.startDatetime().errors().length > 0"
+            [attr.aria-invalid]="competitionForm.startDatetime().dirty() && competitionForm.startDatetime().errors().length > 0"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          />
+          @if (competitionForm.startDatetime().touched()) {
+            @for (error of competitionForm.startDatetime().errors(); track error) {
+              <p class="text-xs text-red-500 font-medium">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div>
+          <label for="end-datetime" class="mb-1.5 block text-sm font-semibold text-slate-700">Date de fin</label>
+          <input
+            id="end-datetime"
+            type="datetime-local"
+            [formField]="competitionForm.endDatetime"
+            [class.border-red-500]="competitionForm.endDatetime().dirty() && competitionForm.endDatetime().errors().length > 0"
+            [class.bg-red-50]="competitionForm.endDatetime().dirty() && competitionForm.endDatetime().errors().length > 0"
+            [attr.aria-invalid]="competitionForm.endDatetime().dirty() && competitionForm.endDatetime().errors().length > 0"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          />
+          @if (competitionForm.endDatetime().touched()) {
+            @for (error of competitionForm.endDatetime().errors(); track error) {
+              <p class="text-xs text-red-500 font-medium">{{ error.message }}</p>
+            }
+          }          
+        </div>
+      </div>
+
+      <div class="flex justify-end items-center space-x-3 border-t border-slate-200 pt-4">
+        <button
+          type="button"
+          (click)="competitionForm().reset()"
+          class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition duration-150"
+        >
+          Réinitialiser
+        </button>
+        <button
+          type="submit"
+          [disabled]="competitionForm().submitting() || isLoading()"
+          class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+        >
+          {{ isLoading() ? 'Enregistrement…' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+</section>

@@ -1,1 +1,80 @@
-<p>competition-list works!</p>
+
+<div class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+  <table class="min-w-full text-left text-sm text-slate-700">
+    <thead class="bg-slate-100 text-slate-700">
+      <tr>
+        <th scope="col" class="px-4 py-3 font-semibold">Nom</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Portée</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Participants</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Sexe</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Type</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Phase</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Pays</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Équipes</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Début</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Fin</th>
+        <th scope="col" class="px-4 py-3 font-semibold">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (isLoading()) {
+        @for (_ of skeletonRows; track $index) {
+          <tr class="animate-pulse border-b border-slate-200">
+            <td class="p-4"><div class="h-4 w-32 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-20 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-36 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-16 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-24 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-24 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-16 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-16 rounded-full bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-32 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-32 rounded bg-slate-200"></div></td>
+            <td class="p-4"><div class="h-4 w-20 rounded bg-slate-200"></div></td>
+          </tr>
+        }
+      }
+
+      @for (competition of competitions(); track competition.id) {
+        <tr class="border-b border-slate-200 last:border-b-0 hover:bg-slate-50">
+          <th scope="row" class="px-4 py-3 font-medium text-slate-900">
+            <a
+              [routerLink]="['/competition', competition.id]"
+              class="text-blue-800 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              {{ competition.name }}
+            </a>
+          </th>
+          <td class="px-4 py-3">{{ competition.scope }}</td>
+          <td class="px-4 py-3">{{ competition.participantKind }}</td>
+          <td class="px-4 py-3">{{ competition.playerSex }}</td>
+          <td class="px-4 py-3">{{ competition.type }}</td>
+          <td class="px-4 py-3">{{ competition.phase }}</td>
+          <td class="px-4 py-3">{{ competition.countryCode }}</td>
+          <td class="px-4 py-3">{{ competition.numberOfTeams }}</td>
+          <td class="px-4 py-3">{{ competition.startDatetime }}</td>
+          <td class="px-4 py-3">{{ competition.endDatetime }}</td>
+          <td class="px-4 py-3">
+            <button type="button" (click)="openUpdateDialog(competition)" class="rounded-md p-1.5 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900">
+              <svg class="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      }
+
+      @empty {
+        <tr>
+          <td colspan="11" class="p-0">
+            <app-empty-table></app-empty-table>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (modalUpdateOpen()) {
+  <app-competition-update-dialog (onDialogClosed)="closeUpdateDialog()" [competitionData]="competitionToEdit()"> </app-competition-update-dialog>
+}

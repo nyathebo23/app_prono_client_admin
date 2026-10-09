@@ -1,14 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { MatchService } from '../../services/match-service';
+import { Component, inject } from '@angular/core';
 
 @Component({
   selector: 'app-match-list',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './match-list.html',
   styleUrls: ['./match-list.scss'],
 })
 export class MatchList {
- 
+
+
 }

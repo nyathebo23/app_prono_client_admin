@@ -1,14 +1,18 @@
 import { PlayerSex } from "../../../shared/utils/enums/player-sex";
 import { TeamKind } from "../../team/enums/team-kind";
+import { CompetitionPhase } from "../enums/competition-phase";
 import { CompetitionScope } from "../enums/competition-scope";
+import { CompetitionType } from "../enums/competition-type";
 
 export interface CompetitionCreateDto {
     name: string;
-    startDatetime: Date;
-    endDatetime: Date;
+    startDatetime: string;
+    endDatetime: string;
     numberOfTeams: number;
-    countryCode: string | null;
+    countryCode: string | undefined;
     participantKind: TeamKind;
     scope: CompetitionScope;
     playerSex: PlayerSex;
+    type: CompetitionType;
+    phase: CompetitionPhase | undefined;
 }

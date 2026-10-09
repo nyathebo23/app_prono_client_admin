@@ -1,0 +1,37 @@
+<div class="space-y-6">
+    <div>
+        <h2 class="text-2xl font-semibold text-slate-800">Compétitions</h2>
+        <p class="text-sm text-slate-500">Consultez la liste ou créez une compétition.</p>
+    </div>
+
+    <div class="border-b border-slate-200">
+        <div class="-mb-px flex gap-6" role="tablist" aria-label="Gestion des compétitions">
+            @for (tab of tabs; track tab.id) {
+            <button
+                [id]="'competition-' + tab.id + '-tab'"
+                type="button"
+                role="tab"
+                [attr.aria-controls]="tab.panel"
+                [attr.aria-selected]="activeTab() === tab.id"
+                [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
+                (click)="selectTab(tab.id)"
+                class="border-b-2 border-transparent px-1 py-3 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-700 aria-selected:border-blue-600 aria-selected:text-blue-700"
+            >
+                {{ tab.label }}
+            </button>
+            }
+        </div>
+    </div>
+
+    @if (activeTab() === 'list') {
+        <section id="competition-list-panel" role="tabpanel" aria-labelledby="competition-list-tab" tabindex="0">
+            <app-competition-list></app-competition-list>
+        </section>
+    } @else if(activeTab() === 'create') {
+        <section id="competition-create-panel" role="tabpanel" aria-labelledby="competition-create-tab" tabindex="0">
+            <div class="mx-auto w-full max-w-4xl">
+                <app-competition-form></app-competition-form>
+            </div>
+        </section>
+    }
+</div>

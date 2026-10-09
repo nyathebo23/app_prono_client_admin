@@ -1,1 +1,29 @@
-<p>home-layout works!</p>
+<div class="min-h-screen bg-slate-100">
+  <div class="flex min-h-screen">
+    <aside class="w-72 shrink-0 border-r border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-200 px-5 py-4">
+        <h1 class="text-xl font-semibold tracking-tight text-slate-800">Sport Predict</h1>
+      </div>
+
+      <nav class="flex flex-col gap-1 p-3">
+        @for (navItem of sideNavItems; track navItem.route) {
+          <a
+            [routerLink]="navItem.route"
+            [routerLinkActiveOptions]="{ exact: false }"
+            routerLinkActive="!bg-blue-900 !text-white"
+            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            <span class="flex h-5 w-5 items-center justify-center text-current">
+              <ng-container *ngComponentOutlet="navItem.icon" />
+            </span>
+            {{ navItem.title }}
+          </a>
+        }
+      </nav>
+    </aside>
+
+    <main class="flex-1 overflow-auto p-6">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

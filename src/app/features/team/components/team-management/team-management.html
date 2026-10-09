@@ -1,0 +1,20 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between gap-3">
+    <div>
+      <h2 class="text-2xl font-semibold text-slate-800">Équipes</h2>
+      <p class="text-sm text-slate-500">Gérez les équipes et leurs inscriptions.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+    <app-team-form class="min-w-0 xl:col-span-1"></app-team-form>
+    <app-team-list class="min-w-0 xl:col-span-2" (onEdit)="openUpdateDialog($event)"></app-team-list>
+  </div>
+</div>
+
+@if (modalUpdateOpen()) {
+  <app-team-update-dialog
+    [teamData]="teamToEdit()"
+    (onDialogClosed)="closeUpdateDialog()"
+  ></app-team-update-dialog>
+}

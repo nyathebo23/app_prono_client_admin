@@ -1,1 +1,33 @@
-<p>competition-add-team-form works!</p>
+<form class="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" (submit)="enrollTeam($event)">
+	<div>
+		<label for="team-to-enroll" class="mb-1.5 block text-sm font-semibold text-slate-700">Ajouter une équipe</label>
+		<select
+			id="team-to-enroll"
+			[value]="selectedTeamId()"
+			(change)="onTeamChange($event)"
+			[disabled]="teamsResource.isLoading() || availableTeams().length === 0 || isFull()"
+			class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+		>
+			<option value="">Choisir une équipe</option>
+			@for (team of availableTeams(); track team.id) {
+				<option [value]="team.id">{{ team.name }} ({{ team.countryCode }})</option>
+			}
+		</select>
+		@if (teamsResource.isLoading()) {
+			<p class="mt-1 text-xs text-slate-500">Chargement des équipes compatibles…</p>
+		} @else if (availableTeams().length === 0 && !isFull()) {
+			<p class="mt-1 text-xs text-slate-500">Aucune équipe compatible disponible.</p>
+		}
+		@if (enrollError()) {
+			<p role="alert" class="mt-1 text-sm text-red-700">{{ enrollError() }}</p>
+		}
+	</div>
+
+	<button
+		type="submit"
+		[disabled]="!selectedTeamId() || enrollLoading() || isFull()"
+		class="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+	>
+		{{ enrollLoading() ? 'Inscription…' : 'Inscrire l’équipe' }}
+	</button>
+</form>

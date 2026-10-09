@@ -1,0 +1,110 @@
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div class="rounded-t-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 text-white">
+    <h3 class="text-lg font-semibold">Création d'équipe</h3>
+    <p class="mt-1 text-xs text-indigo-100">Remplissez les champs pour enregistrer une équipe.</p>
+  </div>
+
+  <form [formRoot]="teamForm" class="space-y-5 p-5" novalidate>
+    @if (error()) {
+      <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {{ error() }}
+      </div>
+    }
+
+    <div>
+      <label for="team-name" class="mb-1.5 block text-sm font-semibold text-slate-700">Nom de l'équipe</label>
+      <input
+        id="team-name"
+        type="text"
+        [formField]="teamForm.name"
+        [class.border-red-500]="teamForm.name().dirty() && teamForm.name().errors().length > 0"
+        [class.bg-red-50]="teamForm.name().dirty() && teamForm.name().errors().length > 0"
+        [attr.aria-invalid]="teamForm.name().dirty() && teamForm.name().errors().length > 0"
+        class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        placeholder="FC Barcelone"
+      />
+      @if (teamForm.name().dirty()) {
+        @for (error of teamForm.name().errors(); track error) {
+          <p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+        }
+      }
+    </div>
+
+    <div>
+      <label for="team-country" class="mb-1.5 block text-sm font-semibold text-slate-700">Pays</label>
+      <select
+        id="team-country"
+        [formField]="teamForm.countryCode"
+        [class.border-red-500]="teamForm.countryCode().dirty() && teamForm.countryCode().errors().length > 0"
+        [class.bg-red-50]="teamForm.countryCode().dirty() && teamForm.countryCode().errors().length > 0"
+        [attr.aria-invalid]="teamForm.countryCode().dirty() && teamForm.countryCode().errors().length > 0"
+        class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+      >
+        <option value="">Choisir un pays</option>
+        @for (country of countries; track country.code) {
+          <option [value]="country.code">{{ country.label }}</option>
+        }
+      </select>
+        @if (teamForm.countryCode().touched()) {
+            @for (error of teamForm.countryCode().errors(); track error) {
+            <p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+            }
+        }
+    </div>
+
+    <div>
+      <label for="team-kind" class="mb-1.5 block text-sm font-semibold text-slate-700">Type d'équipe</label>
+      <select
+        id="team-kind"
+        [formField]="teamForm.teamKind"
+        [class.border-red-500]="teamForm.teamKind().dirty() && teamForm.teamKind().errors().length > 0"
+        [class.bg-red-50]="teamForm.teamKind().dirty() && teamForm.teamKind().errors().length > 0"
+        [attr.aria-invalid]="teamForm.teamKind().dirty() && teamForm.teamKind().errors().length > 0"
+        class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+      >
+        <option value="">Choisir un type</option>
+        @for (teamKind of teamKinds; track teamKind.value) {
+          <option [value]="teamKind.value">{{ teamKind.label }}</option>
+        }
+      </select>
+        @if (teamForm.teamKind().touched()) {
+            @for (error of teamForm.teamKind().errors(); track error) {
+            <p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+            }
+        }
+    </div>
+
+    <div>
+      <label for="team-sex" class="mb-1.5 block text-sm font-semibold text-slate-700">Sexe des joueurs</label>
+      <select
+        id="team-sex"
+        [formField]="teamForm.playerSex"
+        [class.border-red-500]="teamForm.playerSex().dirty() && teamForm.playerSex().errors().length > 0"
+        [class.bg-red-50]="teamForm.playerSex().dirty() && teamForm.playerSex().errors().length > 0"
+        [attr.aria-invalid]="teamForm.playerSex().dirty() && teamForm.playerSex().errors().length > 0"
+        class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+      >
+        @for (playerSex of playerSexes; track playerSex.value) {
+          <option [value]="playerSex.value">{{ playerSex.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="flex justify-end gap-3 border-t border-slate-200 pt-4">
+      <button
+        type="button"
+        (click)="teamForm().reset()"
+        class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+      >
+        Réinitialiser
+      </button>
+      <button
+        type="submit"
+        [disabled]="teamForm().submitting()"
+        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+      >
+        Enregistrer
+      </button>
+    </div>
+  </form>
+</div>

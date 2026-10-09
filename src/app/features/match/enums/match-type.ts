@@ -1,4 +1,4 @@
 export enum MatchType {
-    REGULAR,
-    KNOCKOUT
+    REGULAR = 'REGULAR',
+    KNOCKOUT = 'KNOCKOUT'
 }

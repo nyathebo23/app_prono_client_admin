@@ -1,0 +1,121 @@
+<div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+  <div class="w-full max-w-xl bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 text-white">
+      <h2 class="text-xl font-bold tracking-wide">Programmation de match</h2>
+      <p class="text-xs text-indigo-100 mt-1">Sélectionnez le sexe, puis la compétition et les équipes concernées.</p>
+    </div>
+
+    <form [formRoot]="matchForm" class="p-6 space-y-5" novalidate>
+      @if (error()) {
+        <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      <div>
+        <label for="player-sex" class="mb-2 block text-sm font-medium text-slate-700">Sexe des joueurs</label>
+        <select
+          id="player-sex"
+          class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          [value]="selectedSex()"
+          (change)="onSexChange($any($event.target).value)"
+        >
+          @for (playerSex of playerSexes; track playerSex.value) {
+            <option [value]="playerSex.value" >{{ playerSex.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="competition" class="mb-2 block text-sm font-medium text-slate-700">Compétition</label>
+        <select
+          id="competition"
+          class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+          [formField]="matchForm.competitionId"
+          [class.border-red-500]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
+          [class.bg-red-50]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
+          [attr.aria-invalid]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
+        >
+          <option value="">Choisir une compétition</option>
+          @for (competition of competitions.value(); track competition.id) {
+            <option [value]="competition.id">{{ competition.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="team-home" class="mb-2 block text-sm font-medium text-slate-700">Équipe à domicile</label>
+          <select
+            id="team-home"
+            class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+            [formField]="matchForm.teamHomeId"
+            [class.border-red-500]="matchForm.teamHomeId().dirty() && matchForm.teamHomeId().errors().length > 0"
+            [class.bg-red-50]="matchForm.teamHomeId().dirty() && matchForm.teamHomeId().errors().length > 0"
+            [attr.aria-invalid]="matchForm.teamHomeId().dirty() && matchForm.teamHomeId().errors().length > 0"
+          >
+            <option value="">Choisir une équipe</option>
+            @for (team of teams(); track team.id) {
+              <option [value]="team.id">{{ team.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="team-away" class="mb-2 block text-sm font-medium text-slate-700">Équipe extérieure</label>
+          <select
+            id="team-away"
+            class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+            [formField]="matchForm.teamAwayId"
+            [class.border-red-500]="matchForm.teamAwayId().dirty() && matchForm.teamAwayId().errors().length > 0"
+            [class.bg-red-50]="matchForm.teamAwayId().dirty() && matchForm.teamAwayId().errors().length > 0"
+            [attr.aria-invalid]="matchForm.teamAwayId().dirty() && matchForm.teamAwayId().errors().length > 0"
+          >
+            <option value="">Choisir une équipe</option>
+            @for (team of teams(); track team.id) {
+              <option [value]="team.id">{{ team.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="match-type" class="mb-2 block text-sm font-medium text-slate-700">Type de match</label>
+        <select
+          id="match-type"
+          class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          [formField]="matchForm.matchType"
+        >
+          <option [value]="MatchType.REGULAR">Régulier</option>
+          <option [value]="MatchType.KNOCKOUT">Élimination directe</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="planned-start-datetime" class="mb-2 block text-sm font-medium text-slate-700">Date et heure prévue</label>
+        <input
+          id="planned-start-datetime"
+          type="datetime-local"
+          class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+          [formField]="matchForm.plannedStartDatetime"
+          [class.border-red-500]="matchForm.plannedStartDatetime().dirty() && matchForm.plannedStartDatetime().errors().length > 0"
+          [class.bg-red-50]="matchForm.plannedStartDatetime().dirty() && matchForm.plannedStartDatetime().errors().length > 0"
+          [attr.aria-invalid]="matchForm.plannedStartDatetime().dirty() && matchForm.plannedStartDatetime().errors().length > 0"
+        />
+      </div>
+
+      <div class="flex justify-end gap-3 border-t border-slate-200 pt-4">
+        <button type="button" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">
+          Réinitialiser
+        </button>
+        <button
+          type="submit"
+          class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+          [disabled]="matchForm().submitting()"
+        >
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
