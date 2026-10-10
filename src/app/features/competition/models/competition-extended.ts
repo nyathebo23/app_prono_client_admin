@@ -31,7 +31,7 @@ export class CompetitionExtended {
       dto.numberOfTeams,
       dto.countryCode,
       dto.participantKind,
-      dto.type,
+      dto.competitionType,
       dto.phase,
       dto.scope,
       dto.playerSex,

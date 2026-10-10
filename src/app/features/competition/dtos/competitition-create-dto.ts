@@ -13,6 +13,6 @@ export interface CompetitionCreateDto {
     participantKind: TeamKind;
     scope: CompetitionScope;
     playerSex: PlayerSex;
-    type: CompetitionType;
+    competitionType: CompetitionType;
     phase: CompetitionPhase | undefined;
 }

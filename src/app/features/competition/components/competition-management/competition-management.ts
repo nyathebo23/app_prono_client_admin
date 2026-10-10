@@ -11,7 +11,7 @@ import { CompetitionForm } from '../competition-form/competition-form';
 })
 export class CompetitionManagement {
   readonly activeTab = signal<'list' | 'create'>('list');
-  
+
   readonly tabs = [
     { id: 'list', label: 'Liste des compétitions', panel: 'competition-list-panel' },
     { id: 'create', label: 'Créer une compétition', panel: 'competition-create-panel' },
@@ -20,6 +20,10 @@ export class CompetitionManagement {
 
   selectTab(id: 'list' | 'create'): void {
     this.activeTab.set(id);
+  }
+
+  moveToTabList() {
+    this.selectTab('list');
   }
  
 }

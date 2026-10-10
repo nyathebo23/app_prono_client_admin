@@ -18,7 +18,6 @@ export type CompetitionFormModel = {
     type: CompetitionType;
     phase: CompetitionPhase | '';
     playerSex: PlayerSex;
-    toDto: () => CompetitionCreateDto;
 };
 
 export const CompetitionFormModel = {
@@ -33,19 +32,7 @@ export const CompetitionFormModel = {
       scope: CompetitionScope.NATIONAL,
       type: CompetitionType.LEAGUE,
       phase: '',
-      playerSex: PlayerSex.MALE,
-      toDto: () => ({
-        name: '',
-        startDatetime: '',
-        endDatetime: '',
-        numberOfTeams: 0,
-        countryCode: '',
-        participantKind: TeamKind.CLUB,
-        scope: CompetitionScope.NATIONAL,
-        type: CompetitionType.LEAGUE,
-        phase: undefined,
-        playerSex: PlayerSex.MALE,
-      }),
+      playerSex: PlayerSex.MALE
     };
   },
 
@@ -58,22 +45,10 @@ export const CompetitionFormModel = {
         countryCode: competition.countryCode ?? '',
         participantKind: competition.participantKind,
         type: competition.type,
-        phase: competition.phase,
+        phase: competition.phase ?? '',
         scope: competition.scope,
         playerSex: competition.playerSex,
-        toDto: () => ({
-            name: competition.name,
-            startDatetime: competition.startDatetime.toISOString(),
-            endDatetime: competition.endDatetime.toISOString(),
-            numberOfTeams: competition.numberOfTeams,
-            countryCode: competition.countryCode ?? '',
-            participantKind: competition.participantKind,
-            scope: competition.scope,
-            type: competition.type,
-            phase: competition.phase,
-            playerSex: competition.playerSex,
-        }),
-        };
+    };
   },
 };
 
@@ -83,9 +58,9 @@ export function toCompetitionCreateDto(model: CompetitionFormModel): Competition
     startDatetime: toUtcIso(model.startDatetime),
     endDatetime: toUtcIso(model.endDatetime),
     numberOfTeams: model.numberOfTeams,
-    countryCode: model.countryCode ?? undefined,
+    countryCode: model.countryCode !== '' ? model.countryCode : undefined,
     participantKind: model.participantKind,
-    type: model.type,
+    competitionType: model.type,
     phase: model.phase !== '' ? model.phase : undefined,
     scope: model.scope,
     playerSex: model.playerSex,

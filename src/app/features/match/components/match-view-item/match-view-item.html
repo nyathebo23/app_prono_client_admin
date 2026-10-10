@@ -1,0 +1,54 @@
+<article class="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:border-slate-300">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex min-w-0 flex-1 items-center gap-4">
+      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-sm font-semibold text-slate-700 shadow-sm">
+        {{ match().teamHome.charAt(0) }}
+      </div>
+
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+          <span>{{ match().competition }}</span>
+          <span>•</span>
+          <span>{{ match().matchType }}</span>
+        </div>
+
+        <div class="mt-2 flex flex-wrap items-center gap-2 text-lg font-semibold text-slate-900">
+          <span>{{ match().teamHome }}</span>
+          <span class="text-slate-400">vs</span>
+          <span>{{ match().teamAway }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-start gap-2 lg:items-end">
+      <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium ring-1" [class]="matchStatusClasses(match().status)">
+        {{ matchStatusLabel(match().status) }}
+      </span>
+
+      @if (shouldDisplayScore(match())) {
+        <div class="text-xl font-bold text-slate-900">
+          {{ scoreLabel(match()) }}
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-3 text-sm text-slate-600">
+    <div class="flex items-center gap-2">
+      <span class="font-medium">Date :</span>
+      <time>{{ match().plannedStartDatetime | date: 'dd MMM yyyy' }}</time>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <span class="font-medium">Heure :</span>
+      <time>{{ match().plannedStartDatetime | date: 'HH:mm' }}</time>
+    </div>
+
+    <a
+      [routerLink]="['/match', match().id]"
+      class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 transition hover:bg-blue-100"
+    >
+      Détails
+    </a>
+  </div>
+</article>

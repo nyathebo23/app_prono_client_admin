@@ -8,7 +8,6 @@ export type TeamFormModel = {
   teamKind: TeamKind | '';
   countryCode: string;
   playerSex: PlayerSex;
-  toDto: () => TeamCreateDto;
 };
 
 export const TeamFormModel = {
@@ -17,13 +16,7 @@ export const TeamFormModel = {
       name: '',
       teamKind: '',
       countryCode: '',
-      playerSex: PlayerSex.MALE,
-      toDto: () => ({
-        name: '',
-        kind: TeamKind.NATIONAL,
-        countryCode: '',
-        playerSex: PlayerSex.MALE,
-      }),
+      playerSex: PlayerSex.MALE
     };
   },
 
@@ -32,13 +25,7 @@ export const TeamFormModel = {
       name: team.name,
       teamKind: team.kind,
       countryCode: team.countryCode,
-      playerSex: team.playerSex,
-      toDto: () => ({
-        name: team.name,
-        kind: team.kind,
-        countryCode: team.countryCode,
-        playerSex: team.playerSex,
-      }),
+      playerSex: team.playerSex
     };
   },
 };
@@ -47,8 +34,8 @@ export function toTeamCreateDto(model: TeamFormModel): TeamCreateDto {
   return {
     name: model.name.trim(),
     kind: model.teamKind as TeamKind ?? TeamKind.NATIONAL,
-    countryCode: model.countryCode ?? null,
-    playerSex: model.playerSex ?? PlayerSex.MALE,
+    countryCode: model.countryCode,
+    playerSex: model.playerSex,
   };
 }
 

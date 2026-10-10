@@ -21,7 +21,7 @@ export class CompetitionService {
   }
 
   updateCompetition(id: string, data: CompetitionUpdateDto): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.COMPETITION}${id}`, data);
+    return this.http.put<null>(`${API_ENDPOINTS.COMPETITION}/${id}`, data);
   }
 
   getCompetitions(): Observable<Competition[]> {
@@ -33,18 +33,18 @@ export class CompetitionService {
   getActiveOrUpcomingCompetitionsBySex(playerSex: PlayerSex): Observable<Competition[]> {
     const params = new HttpParams().set('playerSex', String(playerSex));
 
-    return this.http.get<CompetitionDto[]>(`${API_ENDPOINTS.COMPETITION}active-or-upcoming`, { params }).pipe(
+    return this.http.get<CompetitionDto[]>(`${API_ENDPOINTS.COMPETITION}/active-or-upcoming`, { params }).pipe(
       map((dtos) => dtos.map((dto) => Competition.fromCompetitionDto(dto))),
     );
   }
 
   getCompetition(id: string): Observable<CompetitionExtended> {
-    return this.http.get<CompetitionExtendedDto>(`${API_ENDPOINTS.COMPETITION}${id}`).pipe(
+    return this.http.get<CompetitionExtendedDto>(`${API_ENDPOINTS.COMPETITION}/${id}`).pipe(
       map((dto) => CompetitionExtended.fromCompetitionExtendedDto(dto)),
     );
   }
 
   deleteCompetition(id: string): Observable<null> {
-    return this.http.delete<null>(`${API_ENDPOINTS.COMPETITION}${id}`);
+    return this.http.delete<null>(`${API_ENDPOINTS.COMPETITION}/${id}`);
   }
 }

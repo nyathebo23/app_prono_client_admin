@@ -1,0 +1,106 @@
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+	<div class="rounded-t-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-4 text-white">
+		<h3 class="text-lg font-semibold">Ajouter un but</h3>
+		<p class="mt-1 text-xs text-indigo-100">Renseignez le buteur, la minute et l'équipe.</p>
+	</div>
+
+	<form [formRoot]="goalScoredForm" class="space-y-5 p-5" novalidate>
+		@if (goalCreateError()) {
+			<div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+				{{ goalCreateError() }}
+			</div>
+		}
+
+		<div>
+			<label for="goal-scorer" class="mb-1.5 block text-sm font-semibold text-slate-700">Buteur</label>
+			<input
+				id="goal-scorer"
+				type="text"
+				[formField]="goalScoredForm.scorer"
+				[class.border-red-500]="goalScoredForm.scorer().dirty() && goalScoredForm.scorer().errors().length > 0"
+				[class.bg-red-50]="goalScoredForm.scorer().dirty() && goalScoredForm.scorer().errors().length > 0"
+				[attr.aria-invalid]="goalScoredForm.scorer().dirty() && goalScoredForm.scorer().errors().length > 0"
+				class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+				placeholder="Nom du buteur"
+			/>
+
+			@if (goalScoredForm.scorer().dirty()) {
+				@for (error of goalScoredForm.scorer().errors(); track error) {
+					<p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+				}
+			}
+		</div>
+
+		<div>
+			<label for="goal-minute" class="mb-1.5 block text-sm font-semibold text-slate-700">Minute</label>
+			<input
+				id="goal-minute"
+				type="number"
+				[formField]="goalScoredForm.minute"
+				[class.border-red-500]="goalScoredForm.minute().dirty() && goalScoredForm.minute().errors().length > 0"
+				[class.bg-red-50]="goalScoredForm.minute().dirty() && goalScoredForm.minute().errors().length > 0"
+				[attr.aria-invalid]="goalScoredForm.minute().dirty() && goalScoredForm.minute().errors().length > 0"
+				class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+				placeholder="75"
+			/>
+
+			@if (goalScoredForm.minute().dirty()) {
+				@for (error of goalScoredForm.minute().errors(); track error) {
+					<p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+				}
+			}
+		</div>
+
+		<div>
+			<label for="goal-team" class="mb-1.5 block text-sm font-semibold text-slate-700">Equipe</label>
+			<select
+				id="goal-team"
+				class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+				[value]="goalScoredModel().teamHomeScored ? 'true' : 'false'"
+				(change)="goalScoredModel.update((model) => ({ ...model, teamHomeScored: $any($event.target).value === 'true' }))"
+			>
+				<option [value]="'true'">{{ homeTeamName() }}</option>
+				<option [value]="'false'">{{ awayTeamName() }}</option>
+			</select>
+		</div>
+
+		<div class="space-y-2">
+			<label class="flex items-center gap-2 text-sm text-slate-700">
+				<input
+					type="checkbox"
+					[formField]="goalScoredForm.isOwnGoal"
+				/>
+				But contre son camp
+			</label>
+
+			<label class="flex items-center gap-2 text-sm text-slate-700">
+				<input
+					type="checkbox"
+					[formField]="goalScoredForm.isPenalty"
+				/>
+				Penalty
+			</label>
+		</div>
+
+		<div class="flex justify-end gap-3 border-t border-slate-200 pt-4">
+			<button
+				type="button"
+				(click)="goalScoredModel.set(GoalScoredFormModel.empty(matchId()))"
+				class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+			>
+				Réinitialiser
+			</button>
+			<button
+				type="submit"
+				[disabled]="goalScoredForm().submitting() || goalCreateLoading()"
+				class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+			>
+				@if (goalCreateLoading()) {
+					Enregistrement…
+				} @else {
+					Enregistrer le but
+				}
+			</button>
+		</div>
+	</form>
+</div>

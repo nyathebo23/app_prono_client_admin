@@ -20,7 +20,7 @@ export class TeamInCompetitionService {
     }
 
     removeByTeamInCompetitionId(id: string): Observable<null> {  
-      return this.http.post<null>(`${API_ENDPOINTS.TEAM_IN_COMPETITION}${id}`, {});
+      return this.http.post<null>(`${API_ENDPOINTS.TEAM_IN_COMPETITION}/${id}`, {});
     }
 
     deleteTeamFromCompetition(competitionId: string, teamId: string): Observable<null> {
@@ -31,7 +31,7 @@ export class TeamInCompetitionService {
     }
 
     deleteByTeamInCompetitionId(id: string): Observable<null> {  
-      return this.http.delete<null>(`${API_ENDPOINTS.TEAM_IN_COMPETITION}${id}`, {});
+      return this.http.delete<null>(`${API_ENDPOINTS.TEAM_IN_COMPETITION}/${id}`, {});
     }
 
 }

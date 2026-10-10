@@ -1,33 +1,33 @@
-import { httpResource } from '@angular/common/http';
-import { computed, Service, signal } from '@angular/core';
-import { API_ENDPOINTS } from '../../../shared/api/api-endpoints';
+import { computed, inject, Service, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { MatchFilterDto } from '../dtos/match-filter-dto';
-import { MatchItemDto } from '../dtos/match-item-dto';
 import { createApiErrorResponse } from '../../../shared/api/api-error-response';
+import { MatchService } from '../services/match-service';
 
 @Service()
 export class MatchQueryStore {
+  private readonly matchService = inject(MatchService);
+
   private readonly competitionId = signal<string | null>(null);
-  private readonly filters = signal<MatchFilterDto>(MatchFilterDto.empty());
+  private readonly matchCompetitionFilters = signal<MatchFilterDto>(MatchFilterDto.empty());
+  private readonly matchLiveFilters = signal<MatchFilterDto>(MatchFilterDto.empty());
 
-  readonly matchesCompetitionResource = httpResource<MatchItemDto[]>(() => {
-    const id = this.competitionId();
-
-    if (!id) {
-      return undefined;
-    }
-    return {
-      url: `${API_ENDPOINTS.MATCH_QUERY}competition/${id}`,
-      params: this.filters().toHttpParams(),
-      defaultValue: []
-    };
+  readonly matchesCompetitionResource = rxResource({
+    params: () => {
+      const competitionId = this.competitionId();
+      return competitionId
+        ? { competitionId, filters: this.matchCompetitionFilters() }
+        : undefined;
+    },
+    stream: ({ params }) => this.matchService.getMatchesByCompetition(params.competitionId, params.filters),
+    defaultValue: [],
   });
 
-  readonly matchesLiveResource = httpResource<MatchItemDto[]>(() => ({
-    url: API_ENDPOINTS.MATCH_LIVE,
-    params: this.filters().toHttpParams(),
-    defaultValue: []
-  }));
+  readonly matchesLiveResource = rxResource({
+    params: () => this.matchLiveFilters(),
+    stream: ({ params }) => this.matchService.getLiveMatches(params),
+    defaultValue: [],
+  });
 
   readonly matchesLiveResourceError = computed(
     () => createApiErrorResponse(this.matchesLiveResource.error())
@@ -35,16 +35,16 @@ export class MatchQueryStore {
 
   readonly matchesCompetitionResourceError = computed(
     () => createApiErrorResponse(this.matchesCompetitionResource.error())
-  ); 
+  );
 
   readonly hasCompetitionId = computed(() => !!this.competitionId());
 
   loadCompetitionMatches(competitionId: string, filters: MatchFilterDto = MatchFilterDto.empty()): void {
     this.competitionId.set(competitionId);
-    this.filters.set(filters);
+    this.matchCompetitionFilters.set(filters);
   }
 
   loadLiveMatches(filters: MatchFilterDto = MatchFilterDto.empty()): void {
-    this.filters.set(filters);
+    this.matchLiveFilters.set(filters);
   }
 }

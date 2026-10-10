@@ -1,0 +1,103 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4">
+	<section class="w-full max-w-xl rounded-xl border border-slate-200 bg-white shadow-lg" role="dialog" aria-modal="true" aria-labelledby="update-goal-title">
+		<div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+			<div>
+				<h2 id="update-goal-title" class="text-lg font-semibold text-slate-800">Modifier le but</h2>
+				<p class="mt-1 text-sm text-slate-500">Modifiez les informations du but enregistré.</p>
+			</div>
+			<button
+				type="button"
+				(click)="closeDialog()"
+				class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+				aria-label="Fermer le dialogue"
+			>
+				<span aria-hidden="true">×</span>
+			</button>
+		</div>
+
+		<form [formRoot]="goalScoredForm" class="space-y-5 p-5" novalidate>
+			@if (goalUpdateError()) {
+				<div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+					{{ goalUpdateError() }}
+				</div>
+			}
+
+			<div>
+				<label for="update-goal-scorer" class="mb-1.5 block text-sm font-semibold text-slate-700">Buteur</label>
+				<input
+					id="update-goal-scorer"
+					type="text"
+					[formField]="goalScoredForm.scorer"
+					[class.border-red-500]="goalScoredForm.scorer().dirty() && goalScoredForm.scorer().errors().length > 0"
+					[class.bg-red-50]="goalScoredForm.scorer().dirty() && goalScoredForm.scorer().errors().length > 0"
+					[attr.aria-invalid]="goalScoredForm.scorer().dirty() && goalScoredForm.scorer().errors().length > 0"
+					class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+				/>
+				@if (goalScoredForm.scorer().dirty()) {
+					@for (error of goalScoredForm.scorer().errors(); track error) {
+						<p class="mt-1 text-xs font-medium text-red-600">{{ error.message }}</p>
+					}
+				}
+			</div>
+
+			<div>
+				<label for="update-goal-minute" class="mb-1.5 block text-sm font-semibold text-slate-700">Minute</label>
+				<input
+					id="update-goal-minute"
+					type="number"
+					[formField]="goalScoredForm.minute"
+					[class.border-red-500]="goalScoredForm.minute().dirty() && goalScoredForm.minute().errors().length > 0"
+					[class.bg-red-50]="goalScoredForm.minute().dirty() && goalScoredForm.minute().errors().length > 0"
+					[attr.aria-invalid]="goalScoredForm.minute().dirty() && goalScoredForm.minute().errors().length > 0"
+					class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+				/>
+				@if (goalScoredForm.minute().dirty()) {
+					@for (error of goalScoredForm.minute().errors(); track error) {
+						<p class="mt-1 text-xs font-medium text-red-600">{{ error.message }}</p>
+					}
+				}
+			</div>
+
+			<div>
+				<label for="update-goal-team" class="mb-1.5 block text-sm font-semibold text-slate-700">Equipe</label>
+				<select
+					id="update-goal-team"
+					class="w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+					[value]="goalScoredModel().teamHomeScored ? 'true' : 'false'"
+					(change)="goalScoredModel.update((model) => ({ ...model, teamHomeScored: $any($event.target).value === 'true' }))"
+				>
+					<option value="true">{{ homeTeamName() }}</option>
+					<option value="false">{{ awayTeamName() }}</option>
+				</select>
+			</div>
+
+			<div class="space-y-2">
+				<label class="flex items-center gap-2 text-sm text-slate-700">
+					<input type="checkbox" [formField]="goalScoredForm.isOwnGoal" />
+					But contre son camp
+				</label>
+				<label class="flex items-center gap-2 text-sm text-slate-700">
+					<input type="checkbox" [formField]="goalScoredForm.isPenalty" />
+					Penalty
+				</label>
+			</div>
+
+			<div class="flex justify-end gap-3 border-t border-slate-200 pt-4">
+				<button
+					type="button"
+					(click)="closeDialog()"
+					class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+				>
+					Annuler
+				</button>
+				<button
+					type="submit"
+					[disabled]="goalScoredForm().submitting() || goalUpdateLoading()"
+					class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+				>
+					{{ goalUpdateLoading() ? 'Enregistrement…' : 'Enregistrer' }}
+				</button>
+			</div>
+		</form>
+	</section>
+</div>

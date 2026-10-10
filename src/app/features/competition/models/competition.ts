@@ -15,7 +15,7 @@ export class Competition {
     public countryCode: string | null,
     public participantKind: TeamKind,
     public type: CompetitionType,
-    public phase: CompetitionPhase,
+    public phase: CompetitionPhase | null,
     public scope: CompetitionScope,
     public playerSex: PlayerSex,
   ) {}
@@ -29,7 +29,7 @@ export class Competition {
       dto.numberOfTeams,
       dto.countryCode,
       dto.participantKind,
-      dto.type,
+      dto.competitionType,
       dto.phase,
       dto.scope,
       dto.playerSex,

@@ -30,7 +30,7 @@
     } @else if(activeTab() === 'create') {
         <section id="competition-create-panel" role="tabpanel" aria-labelledby="competition-create-tab" tabindex="0">
             <div class="mx-auto w-full max-w-4xl">
-                <app-competition-form></app-competition-form>
+                <app-competition-form (onMoveToListTab)="moveToTabList()" ></app-competition-form>
             </div>
         </section>
     }

@@ -14,7 +14,7 @@
 
 @if (modalUpdateOpen()) {
   <app-team-update-dialog
-    [teamData]="teamToEdit()"
+    [teamData]="teamToEdit()!"
     (onDialogClosed)="closeUpdateDialog()"
   ></app-team-update-dialog>
 }

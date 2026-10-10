@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, output, signal } from '@angular/core';
 import { CompetitionStore } from '../../stores/competition-store';
 import { CompetitionFormModel, toCompetitionCreateDto } from '../../models/competition-form-model';
-import { form, required, FormRoot, FormField, min, max } from '@angular/forms/signals';
+import { form, required, FormRoot, FormField, min, max, disabled } from '@angular/forms/signals';
 import {
   futureDateConstraint,
   minLength,
@@ -9,10 +9,10 @@ import {
   shouldNotStartWithSpace,
   validateDatetime,
 } from '../../../../shared/utils/forms/validation-rules';
-import { competitionTypes } from '../../enums/competition-type';
-import { competitionScopes } from '../../enums/competition-scope';
+import { CompetitionType, competitionTypes } from '../../enums/competition-type';
+import { CompetitionScope, competitionScopes } from '../../enums/competition-scope';
 import { competitionPhases } from '../../enums/competition-phase';
-import { teamKinds } from '../../../team/enums/team-kind';
+import { TeamKind, teamKinds } from '../../../team/enums/team-kind';
 import { playerSexes } from '../../../../shared/utils/enums/player-sex';
 import { countries as countryOptions } from '../../../../shared/utils/countries';
 
@@ -27,6 +27,13 @@ export class CompetitionForm {
   isLoading = this.competitionStore.createLoading;
   error = this.competitionStore.createError;
 
+
+  onMoveToListTab = output<void>();
+
+  moveToListTab() {
+    this.onMoveToListTab.emit();
+  }
+
   competitionModel = signal<CompetitionFormModel>(CompetitionFormModel.empty());
 
   competitionTypes = competitionTypes;
@@ -35,6 +42,28 @@ export class CompetitionForm {
   participantKinds = teamKinds;
   playerSexes = playerSexes;
   countries = countryOptions;
+
+
+  constructor() {
+    effect(() => {
+        if (this.competitionForm.type().value() == CompetitionType.LEAGUE) {
+          this.competitionModel.update((current) => ({
+            ...current,
+            phase: ''
+          }));          
+        }
+      }
+    );
+    effect(() => {
+        if (this.competitionForm.scope().value() == CompetitionScope.NATIONAL) {
+          this.competitionModel.update((current) => ({
+            ...current,
+            participantKind: TeamKind.CLUB
+          }));          
+        }
+      }
+    );  
+  }
 
   competitionForm = form(this.competitionModel,
     (schemaPath) => {
@@ -49,6 +78,15 @@ export class CompetitionForm {
       validateDatetime(schemaPath.endDatetime);
       futureDateConstraint(schemaPath.endDatetime);
       rangeDateValidity(schemaPath.startDatetime, schemaPath.endDatetime);
+
+      disabled(schemaPath.phase, {
+        when: () => this.competitionForm.type().value() === CompetitionType.LEAGUE
+      });
+
+      disabled(schemaPath.participantKind, {
+        when: () => this.competitionForm.scope().value() == CompetitionScope.NATIONAL
+      });
+
     },
     {
       submission: {
@@ -58,7 +96,8 @@ export class CompetitionForm {
           );
 
           if (success) {
-            this.competitionModel.set(CompetitionFormModel.empty());
+            //this.competitionModel.set(CompetitionFormModel.empty());
+            this.moveToListTab();
           }
         },
       },

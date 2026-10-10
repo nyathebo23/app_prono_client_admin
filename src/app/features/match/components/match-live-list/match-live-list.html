@@ -1,0 +1,19 @@
+@if (liveMatchesLoading()) {
+  <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
+    Chargement des matchs en direct…
+  </div>
+} @else if (liveMatchesError()) {
+  <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+    {{ liveMatchesError() }}
+  </div>
+} @else {
+  <div class="space-y-4">
+    @for (match of liveMatches(); track match.id) {
+      <app-match-view-item [match]="match" />
+    } @empty {
+      <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
+        Aucun match en cours pour le moment.
+      </div>
+    }
+  </div>
+}

@@ -17,7 +17,7 @@ import { minLength, shouldNotStartWithSpace } from '../../../../shared/utils/for
 export class TeamUpdateDialog {
   private readonly teamStore = inject(TeamStore);
 
-  readonly teamData = input<Team | null>(null);
+  readonly teamData = input.required<Team>();
   readonly onDialogClosed = output<void>();
   readonly isLoading = this.teamStore.updateLoading;
   readonly error = this.teamStore.updateError;

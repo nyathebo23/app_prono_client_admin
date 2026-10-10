@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { TeamStore } from '../../stores/team-store';
 import { form, required, FormRoot, FormField } from '@angular/forms/signals';
-import { TeamFormModel } from '../../models/team-form-model';
+import { TeamFormModel, toTeamCreateDto } from '../../models/team-form-model';
 import { playerSexes } from '../../../../shared/utils/enums/player-sex';
 import { countries as countryOptions } from '../../../../shared/utils/countries';
 import { teamKinds } from '../../enums/team-kind';
@@ -39,7 +39,7 @@ export class TeamForm  {
     {
       submission: {
         action: async () => {
-          const success = await this.teamStore.createTeam(this.teamModel().toDto());
+          const success = await this.teamStore.createTeam(toTeamCreateDto(this.teamModel()));
         },
       },
     },

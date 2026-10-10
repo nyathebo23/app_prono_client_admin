@@ -76,5 +76,5 @@
 </div>
 
 @if (modalUpdateOpen()) {
-  <app-competition-update-dialog (onDialogClosed)="closeUpdateDialog()" [competitionData]="competitionToEdit()"> </app-competition-update-dialog>
+  <app-competition-update-dialog (onDialogClosed)="closeUpdateDialog()" [competitionData]="competitionToEdit()!"> </app-competition-update-dialog>
 }

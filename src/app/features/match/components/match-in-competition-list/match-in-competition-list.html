@@ -1,0 +1,71 @@
+<div class="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
+  <aside class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-slate-900">Compétitions</h2>
+      <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+        {{ competitions().length }}
+      </span>
+    </div>
+
+    <div class="space-y-2">
+      @for (competition of competitions(); track competition.id) {
+        <button
+          type="button"
+          (click)="selectCompetition(competition.id)"
+          class="w-full rounded-xl border px-3 py-3 text-left transition"
+          [class.border-blue-200]="selectedCompetitionId() === competition.id"
+          [class.bg-blue-50]="selectedCompetitionId() === competition.id"
+          [class.border-slate-200]="selectedCompetitionId() !== competition.id"
+          [class.bg-white]="selectedCompetitionId() !== competition.id"
+        >
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-medium text-slate-800">{{ competition.name }}</span>
+            @if (selectedCompetitionId() === competition.id) {
+              <span class="h-2.5 w-2.5 rounded-full bg-blue-600"></span>
+            }
+          </div>
+          <p class="mt-1 text-xs text-slate-500">{{ competition.playerSex }}</p>
+        </button>
+      } @empty {
+        <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+          Aucune compétition disponible.
+        </div>
+      }
+    </div>
+  </aside>
+
+  <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    @if (!selectedCompetition()) {
+      <div class="flex min-h-52 items-center justify-center text-slate-500">
+        Sélectionnez une compétition pour voir les matchs.
+      </div>
+    } @else {
+      <div class="mb-6 flex items-center justify-between gap-3 border-b border-slate-200 pb-4">
+        <div>
+          <p class="text-sm uppercase tracking-[0.2em] text-slate-500">Compétition</p>
+          <h2 class="text-xl font-semibold text-slate-900">{{ selectedCompetition()?.name }}</h2>
+        </div>
+      </div>
+
+      @if (matchesInCompetitionLoading()) {
+        <div class="flex min-h-52 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-500">
+          Chargement des matchs…
+        </div>
+      } @else if (matchesInCompetitionError()) {
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {{ matchesInCompetitionError()?.message ?? 'Erreur lors du chargement des matchs.' }}
+        </div>
+      } @else {
+        <div class="space-y-4">
+          @for (match of matches(); track match.id) {
+            <app-match-view-item [match]="match" />
+          } @empty {
+            <div class="flex min-h-52 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-500">
+              Aucun match programmé pour cette compétition.
+            </div>
+          }
+        </div>
+      }
+    }
+  </section>
+</div>

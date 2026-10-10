@@ -1,0 +1,37 @@
+<div class="space-y-6">
+  <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">Matchs</p>
+      <h1 class="text-2xl font-semibold text-slate-900">Calendrier et résultats</h1>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <a
+        routerLink="/match/competition"
+        routerLinkActive="!bg-blue-900 !text-white"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+      >
+        Matchs compétition
+      </a>
+      <a
+        routerLink="/match/live"
+        routerLinkActive="!bg-blue-900 !text-white"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+      >
+        Matchs en direct
+      </a>
+      <a
+        routerLink="/match/create"
+        routerLinkActive="!bg-blue-900 !text-white"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+      >
+        Créer un match
+      </a>
+    </div>
+  </div>
+
+  <router-outlet />
+</div>

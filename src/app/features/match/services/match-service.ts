@@ -23,47 +23,47 @@ export class MatchService {
     filters: MatchFilterDto = MatchFilterDto.empty(),
   ): Observable<MatchSummarized[]> {
     return this.http
-      .get<MatchItemDto[]>(`${API_ENDPOINTS.MATCH_QUERY}competition/${competitionId}`, {
+      .get<MatchItemDto[]>(`${API_ENDPOINTS.MATCH_QUERY}/competition/${competitionId}`, {
         params: filters.toHttpParams(),
       })
       .pipe(map((dtos) => dtos.map((dto) => MatchSummarized.fromMatchDto(dto))));
   }
 
   getMatchById(id: string): Observable<Match> {
-    return this.http.get<MatchDto>(`${API_ENDPOINTS.MATCH_QUERY}${id}`).pipe(
+    return this.http.get<MatchDto>(`${API_ENDPOINTS.MATCH_QUERY}/${id}`).pipe(
       map((dto) => Match.fromMatchDto(dto)),
     );
   }
 
   getLiveMatches(filters: MatchFilterDto = MatchFilterDto.empty()): Observable<MatchSummarized[]> {
     return this.http
-      .get<MatchItemDto[]>(API_ENDPOINTS.MATCH_LIVE, {
+      .get<MatchItemDto[]>(`${API_ENDPOINTS.MATCH_QUERY}/live`, {
         params: filters.toHttpParams(),
       })
       .pipe(map((dtos) => dtos.map((dto) => MatchSummarized.fromMatchDto(dto))));
   }
 
   createMatch(data: MatchCreateDto): Observable<string> {
-    return this.http.post<string>(API_ENDPOINTS.MATCH_COMMAND + 'create', data);
+    return this.http.post<string>(`${API_ENDPOINTS.MATCH_COMMAND}/create`, data);
   }
 
   updateMatch(id: string, data: MatchUpdateDto): Observable<string> {
-    return this.http.put<string>(`${API_ENDPOINTS.MATCH_COMMAND}${id}/edit-infos`, data);
+    return this.http.put<string>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/edit-infos`, data);
   }
 
   changeMatchStatus(id: string, status: MatchStatus): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.MATCH_COMMAND}${id}/change-status`, { newMatchStatus: status });
+    return this.http.post<null>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/change-status`, { newMatchStatus: status });
   }
 
   cancelMatch(id: string): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.MATCH_COMMAND}${id}/cancel`, {});
+    return this.http.post<null>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/cancel`, {});
   }
 
   setPenShootoutResult(id: string, data: SetPenShootoutResultDto): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.MATCH_COMMAND}${id}/penalty-shootout-result`, data);
+    return this.http.post<null>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/penalty-shootout-result`, data);
   }
 
   deleteMatch(id: string): Observable<void> {
-    return this.http.delete<void>(`${API_ENDPOINTS.MATCH_COMMAND}${id}`);
+    return this.http.delete<void>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}`);
   }
 }

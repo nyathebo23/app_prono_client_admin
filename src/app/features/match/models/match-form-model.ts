@@ -1,3 +1,4 @@
+import { toUtcIso } from '../../../shared/utils/date-utils';
 import { MatchCreateDto } from '../dtos/match-create-dto';
 import { MatchType } from '../enums/match-type';
 
@@ -7,7 +8,6 @@ export type MatchFormModel = {
   competitionId: string;
   matchType: MatchType;
   plannedStartDatetime: string;
-  toDto: () => MatchCreateDto;
 };
 
 export const MatchFormModel = {
@@ -17,14 +17,7 @@ export const MatchFormModel = {
       teamAwayId: '',
       competitionId: '',
       matchType: MatchType.REGULAR,
-      plannedStartDatetime: '',
-      toDto: () => ({
-        teamHomeId: '',
-        teamAwayId: '',
-        competitionId: '',
-        matchType: MatchType.REGULAR,
-        plannedStartDatetime: '',
-      }),
+      plannedStartDatetime: ''
     };
   },
 };
@@ -35,6 +28,6 @@ export function toMatchCreateDto(model: MatchFormModel): MatchCreateDto {
     teamAwayId: model.teamAwayId,
     competitionId: model.competitionId,
     matchType: model.matchType,
-    plannedStartDatetime: model.plannedStartDatetime,
+    startDatetime: toUtcIso(model.plannedStartDatetime),
   };
 }

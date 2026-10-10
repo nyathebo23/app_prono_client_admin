@@ -13,7 +13,7 @@ export interface CompetitionExtendedDto {
     numberOfTeams: number;
     countryCode: string | null;
     participantKind: TeamKind;
-    type: CompetitionType;
+    competitionType: CompetitionType;
     phase: CompetitionPhase;
     scope: CompetitionScope;
     playerSex: PlayerSex;

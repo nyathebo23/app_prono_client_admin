@@ -5,6 +5,6 @@ export interface MatchCreateDto {
     teamAwayId: string;
     competitionId: string;
     matchType: MatchType;
-    plannedStartDatetime: string;
+    startDatetime: string;
 }
 

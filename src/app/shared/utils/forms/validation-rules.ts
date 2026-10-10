@@ -13,7 +13,6 @@ export function shouldNotStartWithSpace(path: SchemaPath<string>, options?: {mes
   });
 }
 
-
 export function minLength(path: SchemaPath<string>, length: number, options?: { message?: string }) {
   validate(path, ({ value }) => {
     const v = value() || '';

@@ -1,6 +1,6 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { CompetitionStore } from '../../stores/competition-store';
-import { CompetitionFormModel } from '../../models/competition-form-model';
+import { CompetitionFormModel, toCompetitionCreateDto } from '../../models/competition-form-model';
 import { form, required, FormRoot, FormField, min, max } from '@angular/forms/signals';
 import { futureDateConstraint, minLength, rangeDateValidity, shouldNotStartWithSpace, validateDatetime } from '../../../../shared/utils/forms/validation-rules';
 import { competitionTypes } from '../../enums/competition-type';
@@ -49,7 +49,7 @@ export class CompetitionCreateDialog {
     {
         submission: {
           action: async () => {
-            const result = this.competitionStore.createCompetition(this.competitionModel().toDto());
+            const result = this.competitionStore.createCompetition(toCompetitionCreateDto(this.competitionModel()));
           }
         } 
     }

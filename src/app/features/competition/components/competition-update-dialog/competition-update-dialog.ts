@@ -1,6 +1,6 @@
-import { Component, inject, signal, input, output  } from '@angular/core';
+import { Component, inject, signal, input, output, effect  } from '@angular/core';
 import { CompetitionStore } from '../../stores/competition-store';
-import { CompetitionFormModel } from '../../models/competition-form-model';
+import { CompetitionFormModel, toCompetitionCreateDto } from '../../models/competition-form-model';
 import { form, required, FormRoot, FormField, min, max } from '@angular/forms/signals';
 import { futureDateConstraint, minLength, rangeDateValidity, shouldNotStartWithSpace, validateDatetime } from '../../../../shared/utils/forms/validation-rules';
 import { competitionTypes } from '../../enums/competition-type';
@@ -23,7 +23,7 @@ export class CompetitionUpdateDialog {
   isLoading = this.competitionStore.updateLoading;
   error = this.competitionStore.updateError;
 
-  competitionData = input<Competition | null>(null);
+  competitionData = input.required<Competition>();
 
   onDialogClosed = output();
 
@@ -31,9 +31,13 @@ export class CompetitionUpdateDialog {
     this.onDialogClosed.emit();
   }
 
-  competitionModel = signal<CompetitionFormModel>(
-    !this.competitionData() ? CompetitionFormModel.empty() : CompetitionFormModel.fromCompetition(this.competitionData()!)
-  );
+  competitionModel = signal<CompetitionFormModel>(CompetitionFormModel.empty());
+
+  constructor() {
+    effect(() => {
+        this.competitionModel.set(CompetitionFormModel.fromCompetition(this.competitionData()));
+    });
+  }
 
   competitionTypes = competitionTypes;
   competitionScopes = competitionScopes;
@@ -59,7 +63,7 @@ export class CompetitionUpdateDialog {
     {
         submission: {
           action: async () => {
-            const result = this.competitionStore.updateCompetition(this.competitionData()!.id,  this.competitionModel().toDto());
+            const result = this.competitionStore.updateCompetition(this.competitionData()!.id, toCompetitionCreateDto(this.competitionModel()));
           }
         } 
     }

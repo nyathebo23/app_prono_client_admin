@@ -1,0 +1,122 @@
+@if (match(); as currentMatch) {
+  <div class="space-y-6">
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Match</p>
+          <h1 class="mt-2 text-3xl font-semibold text-slate-900">
+            {{ currentMatch.teamHome }} vs {{ currentMatch.teamAway }}
+          </h1>
+          <p class="mt-2 text-sm text-slate-500">
+            {{ currentMatch.competition }} • {{ currentMatch.matchType }}
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-right">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Score</p>
+          <div class="mt-2 text-2xl font-bold text-slate-900">{{ scoreLabel() }}</div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid gap-4 lg:grid-cols-3">
+        <div class="rounded-xl bg-slate-50 p-4">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Date prévue</p>
+          <p class="mt-2 text-base font-medium text-slate-800">
+            {{ currentMatch.plannedStartDatetime | date: 'dd MMM yyyy' }}
+          </p>
+        </div>
+
+        <div class="rounded-xl bg-slate-50 p-4">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Heure</p>
+          <p class="mt-2 text-base font-medium text-slate-800">
+            {{ currentMatch.plannedStartDatetime | date: 'HH:mm' }}
+          </p>
+        </div>
+
+        <div class="rounded-xl bg-slate-50 p-4">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Statut</p>
+          <select
+            class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+            (change)="updateMatchStatus($any($event.target).value)"
+          >
+            @for (status of matchStatusOptions; track status) {
+              <option [value]="status" [selected]="status === currentMatch.status">{{ matchStatusLabel(status) }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-xl font-semibold text-slate-900">Buts marqués</h2>
+          <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+            {{ currentMatch.goals.length }}
+          </span>
+        </div>
+
+        @if (currentMatch.goals.length === 0) {
+          <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-slate-500">
+            Aucun but enregistré pour ce match.
+          </div>
+        } @else {
+          <div class="space-y-3">
+            @for (goal of currentMatch.goals; track goal.id) {
+              <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div>
+                  <p class="font-medium text-slate-800">{{ goal.scorer }}</p>
+                  <p class="text-sm text-slate-500">
+                    {{ goal.teamHomeScored ? currentMatch.teamHome : currentMatch.teamAway }}
+                    • {{ goal.isOwnGoal ? 'but contre son camp' : goal.isPenalty ? 'penalty' : 'but standard' }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <p class="text-sm font-semibold text-slate-700">{{ goal.minute }}'</p>
+                  <button
+                    type="button"
+                    class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                    (click)="openGoalUpdate(goal)"
+                  >
+                    Modifier
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <aside class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        @if (statusError()) {
+          <div class="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {{ statusError() }}
+          </div>
+        }
+
+        @if (matchId()) {
+          <app-goal-scored-form
+            [matchId]="matchId()!"
+            [homeTeamName]="currentMatch.teamHome"
+            [awayTeamName]="currentMatch.teamAway"
+            (goalCreated)="refreshMatch()"
+          />
+        }
+      </aside>
+    </div>
+
+    @if (goalToEdit(); as goal) {
+      <app-goal-scored-update-dialog
+        [goalScoredData]="goal"
+        [homeTeamName]="currentMatch.teamHome"
+        [awayTeamName]="currentMatch.teamAway"
+        (onDialogClosed)="closeGoalUpdate()"
+        (goalUpdated)="refreshMatch()"
+      />
+    }
+  </div>
+} @else {
+  <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
+    Chargement du match…
+  </div>
+}

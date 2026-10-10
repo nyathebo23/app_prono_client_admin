@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../../../shared/api/api-endpoints';
 import { GoalCreateDto } from '../dtos/goal-create-dto';
-import { GoalScoredDto } from '../dtos/goal-scored-dto';
 import { GoalUpdateDto } from '../dtos/goal-update-dto';
 
 @Injectable({
@@ -17,10 +16,10 @@ export class GoalScoredService {
   }
 
   editGoal(id: string, data: GoalUpdateDto): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.GOAL_COMMAND}${id}/edit`, data);
+    return this.http.patch<null>(`${API_ENDPOINTS.GOAL_COMMAND}/${id}/edit`, data);
   }
 
   cancelGoal(id: string): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.GOAL_COMMAND}${id}/cancel`, {});
+    return this.http.post<null>(`${API_ENDPOINTS.GOAL_COMMAND}/${id}/cancel`, {});
   }
 }

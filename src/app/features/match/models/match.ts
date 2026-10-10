@@ -27,6 +27,12 @@ export class Match {
   ) {}
 
   static fromMatchDto(dto: MatchDto): Match {
+    const goals = dto.goals.map((goalDto) => GoalScored.fromGoalScoredDto(goalDto))
+    .map((goal) => {
+      goal.matchId = dto.id; 
+      return goal; 
+    });
+    
     return new Match(
       dto.id,
       dto.competitionId,
@@ -46,7 +52,7 @@ export class Match {
       dto.resultPenShootoutTeamHome,
       dto.resultPenShootoutTeamAway,
       dto.matchType,
-      dto.goals.map((goal) => GoalScored.fromGoalScoredDto(goal)),
+      goals,
     );
   }
 }
