@@ -46,11 +46,11 @@ export const routes: Routes = [
             path: 'create',
             component: MatchCreateForm,
           },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/match/components/match-details/match-details').then((m) => m.MatchDetails),
+          },
         ],
-      },
-      {
-        path: 'match/:id',
-        loadComponent: () => import('./features/match/components/match-details/match-details').then((m) => m.MatchDetails),
       },
     ],
   },

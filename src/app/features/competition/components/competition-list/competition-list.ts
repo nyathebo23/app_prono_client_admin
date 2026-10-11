@@ -1,5 +1,4 @@
 import { Component, inject, signal } from '@angular/core';
-import { CompetitionStore } from '../../stores/competition-store';
 import { EmptyTable } from '../../../../shared/components/empty-table/empty-table';
 import { Competition } from '../../models/competition';
 import { CompetitionUpdateDialog } from '../competition-update-dialog/competition-update-dialog';
@@ -11,6 +10,7 @@ import { CompetitionQueryStore } from '../../stores/competition-query-store';
   imports: [EmptyTable, CompetitionUpdateDialog, RouterLink],
   templateUrl: './competition-list.html',
   styleUrl: './competition-list.scss',
+  providers: [CompetitionQueryStore]
 })
 export class CompetitionList {
 

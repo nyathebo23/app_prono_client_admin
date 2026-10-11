@@ -44,11 +44,50 @@
       <time>{{ match().plannedStartDatetime | date: 'HH:mm' }}</time>
     </div>
 
-    <a
-      [routerLink]="['/match', match().id]"
-      class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 transition hover:bg-blue-100"
-    >
-      Détails
-    </a>
+    <div class="flex items-center gap-2">
+      @if (match().status === MatchStatus.SCHEDULED) {
+        <button
+          type="button"
+          class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+          (click)="openMatchEditDialog()"
+        >
+          Modifier
+        </button>
+      }
+      <a
+        [routerLink]="['/match', match().id]"
+        class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 transition hover:bg-blue-100"
+      >
+        Détails
+      </a>
+    </div>
   </div>
 </article>
+
+@if (selectedMatchId()) {
+  @if (editMatchResource.value(); as fullMatch) {
+    <app-match-edit-dialog
+      [match]="fullMatch"
+      (onDialogClosed)="closeMatchEditDialog()"
+    />
+  } @else if (editMatchError()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+      <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl" role="alert">
+        <p class="text-sm text-red-700">{{ editMatchError() }}</p>
+        <button
+          type="button"
+          class="mt-4 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+          (click)="closeMatchEditDialog()"
+        >
+          Fermer
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+      <div class="rounded-xl bg-white px-6 py-4 text-sm text-slate-600 shadow-xl" role="status">
+        Chargement du match…
+      </div>
+    </div>
+  }
+}

@@ -6,19 +6,23 @@ import { playerSexes } from '../../../../shared/utils/enums/player-sex';
 import { countries as countryOptions } from '../../../../shared/utils/countries';
 import { teamKinds } from '../../enums/team-kind';
 import { minLength, shouldNotStartWithSpace } from '../../../../shared/utils/forms/validation-rules';
+import { TeamService } from '../../services/team-service';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
 
 
 @Component({
   selector: 'app-team-form',
   imports: [FormRoot, FormField],
   templateUrl: './team-form.html',
-  styleUrls: ['./team-form.scss'],
+  styleUrls: ['./team-form.scss']
 })
 export class TeamForm  {
  
   private readonly teamStore = inject(TeamStore);
-  isLoading = this.teamStore.createLoading;
-  error = this.teamStore.createError;
+  private readonly teamService = inject(TeamService);
+  private readonly _createMutation = createMutation<string>();
+  isLoading = this._createMutation.loading;
+  error = this._createMutation.error;
 
   teamModel = signal(TeamFormModel.empty());
 
@@ -39,7 +43,10 @@ export class TeamForm  {
     {
       submission: {
         action: async () => {
-          const success = await this.teamStore.createTeam(toTeamCreateDto(this.teamModel()));
+          const result = await this._createMutation.mutate(this.teamService.createTeam(toTeamCreateDto(this.teamModel())));
+          if (result.success) {
+            this.teamStore.reload()
+          }
         },
       },
     },

@@ -76,6 +76,11 @@
               <option [value]="team.id">{{ team.name }}</option>
             }
           </select>
+            @if (matchForm.teamAwayId().touched()) {
+                @for (error of matchForm.teamAwayId().errors(); track error) {
+                <p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+                }
+            }          
         </div>
       </div>
 
@@ -102,6 +107,11 @@
           [class.bg-red-50]="matchForm.plannedStartDatetime().dirty() && matchForm.plannedStartDatetime().errors().length > 0"
           [attr.aria-invalid]="matchForm.plannedStartDatetime().dirty() && matchForm.plannedStartDatetime().errors().length > 0"
         />
+        @if (matchForm.plannedStartDatetime().touched()) {
+            @for (error of matchForm.plannedStartDatetime().errors(); track error) {
+            <p class="mt-1 text-xs font-medium text-red-500">{{ error.message }}</p>
+            }
+        }
       </div>
 
       <div class="flex justify-end gap-3 border-t border-slate-200 pt-4">

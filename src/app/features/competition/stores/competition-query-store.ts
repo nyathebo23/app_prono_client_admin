@@ -4,7 +4,7 @@ import { PlayerSex } from '../../../shared/utils/enums/player-sex';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { createApiErrorResponse } from '../../../shared/api/api-error-response';
 
-@Service()
+@Service({autoProvided: false})
 export class CompetitionQueryStore {
     private readonly competitionService = inject(CompetitionService);
 
@@ -30,6 +30,7 @@ export class CompetitionQueryStore {
 
     reloadCompetitions(): void {
         this.competitionsListResource.reload();
+        this.competitionsActiveOrUpcomingResource.reload();
     }
     
 }

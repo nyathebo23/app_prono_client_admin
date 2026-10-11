@@ -1,21 +1,49 @@
 import { DatePipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { createApiErrorResponse } from '../../../../shared/api/api-error-response';
 import { MatchStatus } from '../../enums/match-status';
 import { MatchSummarized } from '../../models/match-summarized';
+import { MatchService } from '../../services/match-service';
+import { MatchQueryStore } from '../../stores/match-query-store';
 import { getMatchStatusLabel } from '../../utils/match-status-label';
+import { MatchEditDialog } from '../match-edit-dialog/match-edit-dialog';
 
 @Component({
   selector: 'app-match-view-item',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, MatchEditDialog],
   styleUrl: './match-view-item.scss',
   templateUrl: './match-view-item.html',
 })
 export class MatchViewItem {
-  match = input.required<MatchSummarized>();
-  protected readonly matchStatusLabel = getMatchStatusLabel;
+  private readonly matchService = inject(MatchService);
+  private readonly matchQueryStore = inject(MatchQueryStore);
 
-  protected matchStatusClasses(status: MatchStatus): string {
+  match = input.required<MatchSummarized>();
+  protected readonly MatchStatus = MatchStatus;
+  private readonly matchStatusLabel = getMatchStatusLabel;
+  protected readonly selectedMatchId = signal<string | null>(null);
+  private readonly editMatchResource = rxResource({
+    params: () => this.selectedMatchId() ?? undefined,
+    stream: ({ params }) => this.matchService.getMatchById(params),
+    defaultValue: undefined,
+  });
+  private readonly editMatchError = computed(() =>
+    createApiErrorResponse(this.editMatchResource.error()),
+  );
+
+  private openMatchEditDialog(): void {
+    if (this.match().status === MatchStatus.SCHEDULED) {
+      this.selectedMatchId.set(this.match().id);
+    }
+  }
+
+  private closeMatchEditDialog(): void {
+    this.selectedMatchId.set(null);
+  }
+
+  private matchStatusClasses(status: MatchStatus): string {
     switch (status) {
       case MatchStatus.FINISHED:
         return 'bg-emerald-100 text-emerald-700 ring-emerald-200';
@@ -30,7 +58,7 @@ export class MatchViewItem {
     }
   }
 
-  protected scoreLabel(match: MatchSummarized): string {
+  private scoreLabel(match: MatchSummarized): string {
     if (
       match.status === MatchStatus.SCHEDULED ||
       match.status === MatchStatus.CANCELLED ||
@@ -54,7 +82,7 @@ export class MatchViewItem {
     return parts.join(' • ');
   }
 
-  protected shouldDisplayScore(match: MatchSummarized): boolean {
+  private shouldDisplayScore(match: MatchSummarized): boolean {
     const hasStarted =
       match.status !== MatchStatus.SCHEDULED &&
       match.status !== MatchStatus.CANCELLED &&

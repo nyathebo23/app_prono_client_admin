@@ -1,8 +1,10 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { SearchTeamQueryDto } from '../../../team/dtos/search-team-query-dto';
 import { CompetitionExtended } from '../../models/competition-extended';
-import { TeamInCompetitionStore } from '../../stores/team-in-competition-store';
 import { TeamQueryStore } from '../../../team/stores/team-query-store';
+import { TeamInCompetitionService } from '../../services/team-in-competition-service';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
+import { SingleCompetitionDetailsStore } from '../../stores/single-competition-details-store';
 
 @Component({
   selector: 'app-competition-add-team-form',
@@ -12,6 +14,22 @@ import { TeamQueryStore } from '../../../team/stores/team-query-store';
   providers: [TeamQueryStore]
 })
 export class CompetitionAddTeamForm implements OnInit {
+
+
+  private readonly teamInCompetitionService = inject(TeamInCompetitionService);
+  private readonly competitionStore = inject(SingleCompetitionDetailsStore);
+  private readonly teamQueryStore = inject(TeamQueryStore);
+
+
+  private readonly selectedTeamId = signal('');
+  private readonly _enrollMutation = createMutation<string>();
+  private readonly enrollLoading = this._enrollMutation.loading;
+  private readonly enrollError = this._enrollMutation.error;
+
+  private readonly teamsResource = this.teamQueryStore.teamsResource;
+  private readonly teamsResourceError = this.teamQueryStore.teamsResourceError;
+  
+  readonly competition = input.required<CompetitionExtended>();
 
   ngOnInit(): void {
     const competition = this.competition();
@@ -23,19 +41,6 @@ export class CompetitionAddTeamForm implements OnInit {
       )
     );
   }
-  readonly competition = input.required<CompetitionExtended>();
-
-  private readonly teamInCompetitionStore = inject(TeamInCompetitionStore);
-  private readonly teamQueryStore = inject(TeamQueryStore);
-
-
-  private readonly selectedTeamId = signal('');
-  private readonly enrollLoading = this.teamInCompetitionStore.enrollLoading;
-  private readonly enrollError = this.teamInCompetitionStore.enrollError;
-
-  private readonly teamsResource = this.teamQueryStore.teamsResource;
-  private readonly teamsResourceError = this.teamQueryStore.teamsResourceError;
-  
 
   readonly availableTeams = computed(() => {
     const registeredTeamIds = new Set(
@@ -59,14 +64,18 @@ export class CompetitionAddTeamForm implements OnInit {
     const competition = this.competition();
     if (!teamId || this.isFull() || this.enrollLoading()) return;
 
-    const success = await this.teamInCompetitionStore.enrollTeam({
-      teamId,
-      competitionId: competition.id,
-    });
 
-    if (success) {
+    const result = await this._enrollMutation.mutate(
+      this.teamInCompetitionService.enrollTeamToCompetition({
+        competitionId: competition.id,
+        teamId
+      })
+    );
+    if (result.success) {
+      this.competitionStore.reload();
       this.selectedTeamId.set('');
     }
+
   }
 
 }

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CompetitionCreateDialog } from './competition-create-dialog';
+import { GoalCancelConfirmDialog } from './goal-cancel-confirm-dialog';
 
-describe('CompetitionCreateDialog', () => {
-  let component: CompetitionCreateDialog;
-  let fixture: ComponentFixture<CompetitionCreateDialog>;
+describe('GoalCancelConfirmDialog', () => {
+  let component: GoalCancelConfirmDialog;
+  let fixture: ComponentFixture<GoalCancelConfirmDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CompetitionCreateDialog]
+      imports: [GoalCancelConfirmDialog]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(CompetitionCreateDialog);
+    fixture = TestBed.createComponent(GoalCancelConfirmDialog);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

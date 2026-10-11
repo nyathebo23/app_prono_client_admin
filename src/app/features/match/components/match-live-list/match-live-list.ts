@@ -7,6 +7,7 @@ import { MatchQueryStore } from '../../stores/match-query-store';
   selector: 'app-match-live-list',
   styleUrl: './match-live-list.scss',
   templateUrl: './match-live-list.html',
+  providers: [MatchQueryStore]
 })
 export class MatchLiveList {
   private readonly matchQueryStore = inject(MatchQueryStore);

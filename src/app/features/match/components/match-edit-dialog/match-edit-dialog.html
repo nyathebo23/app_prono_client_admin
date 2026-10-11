@@ -1,0 +1,83 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/50 p-4">
+	<section class="w-full max-w-2xl rounded-xl border border-slate-200 bg-white shadow-xl" role="dialog" aria-modal="true" aria-labelledby="edit-match-title">
+		<header class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+			<div>
+				<h2 id="edit-match-title" class="text-lg font-semibold text-slate-900">Modifier le match</h2>
+				<p class="mt-1 text-sm text-slate-500">{{ match().teamHome }} contre {{ match().teamAway }}</p>
+			</div>
+			<button
+				type="button"
+				class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+				[disabled]="isLoading()"
+				(click)="closeDialog()"
+			>
+				Fermer
+			</button>
+		</header>
+
+		<form [formRoot]="matchForm" class="space-y-5 p-5" novalidate>
+			@if (error()) {
+				<div role="alert" class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+					{{ error() }}
+				</div>
+			}
+
+			<div class="grid gap-4 sm:grid-cols-2">
+				<div>
+					<label for="edit-match-home" class="mb-1.5 block text-sm font-semibold text-slate-700">Équipe à domicile</label>
+					<select id="edit-match-home" [formField]="matchForm.teamHomeId" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:bg-slate-100">
+						@for (team of teams(); track team.id) {
+							<option [value]="team.id">{{ team.name }}</option>
+						}
+					</select>
+					@if (matchForm.teamHomeId().touched()) {
+						@for (validationError of matchForm.teamHomeId().errors(); track validationError) {
+							<p class="mt-1 text-xs text-red-600">{{ validationError.message }}</p>
+						}
+					}
+				</div>
+
+				<div>
+					<label for="edit-match-away" class="mb-1.5 block text-sm font-semibold text-slate-700">Équipe extérieure</label>
+					<select id="edit-match-away" [formField]="matchForm.teamAwayId" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:bg-slate-100">
+						@for (team of teams(); track team.id) {
+							<option [value]="team.id">{{ team.name }}</option>
+						}
+					</select>
+					@if (matchForm.teamAwayId().touched()) {
+						@for (validationError of matchForm.teamAwayId().errors(); track validationError) {
+							<p class="mt-1 text-xs text-red-600">{{ validationError.message }}</p>
+						}
+					}
+				</div>
+			</div>
+
+			<div>
+				<label for="edit-match-type" class="mb-1.5 block text-sm font-semibold text-slate-700">Type de match</label>
+				<select id="edit-match-type" [formField]="matchForm.matchType" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+					<option [value]="MatchType.REGULAR">Régulier</option>
+					<option [value]="MatchType.KNOCKOUT">Élimination directe</option>
+				</select>
+			</div>
+
+			<div>
+				<label for="edit-match-start" class="mb-1.5 block text-sm font-semibold text-slate-700">Date et heure prévues</label>
+				<input id="edit-match-start" type="datetime-local" [formField]="matchForm.plannedStartDatetime" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+				@if (matchForm.plannedStartDatetime().touched()) {
+					@for (validationError of matchForm.plannedStartDatetime().errors(); track validationError) {
+						<p class="mt-1 text-xs text-red-600">{{ validationError.message }}</p>
+					}
+				}
+			</div>
+
+			<div class="flex justify-end gap-3 border-t border-slate-200 pt-4">
+				<button type="button" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50" [disabled]="isLoading()" (click)="closeDialog()">
+					Annuler
+				</button>
+				<button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300" [disabled]="matchForm().submitting() || isLoading()">
+					{{ isLoading() ? 'Enregistrement…' : 'Enregistrer' }}
+				</button>
+			</div>
+		</form>
+	</section>
+</div>

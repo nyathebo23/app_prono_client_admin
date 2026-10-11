@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Service } from '@angular/core';
 import { CompetitionCreateDto } from '../dtos/competitition-create-dto';
 import { map, Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../../../shared/api/api-endpoints';
@@ -10,9 +10,7 @@ import { Competition } from '../models/competition';
 import { CompetitionExtended } from '../models/competition-extended';
 import { PlayerSex } from '../../../shared/utils/enums/player-sex';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class CompetitionService {
   private readonly http = inject(HttpClient);
 

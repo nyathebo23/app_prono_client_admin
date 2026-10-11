@@ -1,8 +1,10 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormField, FormRoot, form, max, min, required } from '@angular/forms/signals';
-import { GoalScoredStore } from '../../stores/goal-scored-store';
 import { GoalScored } from '../../models/goal-scored';
 import { GoalScoredFormModel, toGoalUpdateDto } from '../../models/goal-scored-form-model';
+import { GoalScoredService } from '../../services/goal-scored-service';
+import { MatchDetailsStore } from '../../stores/match-details-store';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
 
 @Component({
   imports: [FormField, FormRoot],
@@ -12,16 +14,17 @@ import { GoalScoredFormModel, toGoalUpdateDto } from '../../models/goal-scored-f
 })
 export class GoalScoredUpdateDialog {
 
-  private readonly goalScoredStore = inject(GoalScoredStore);
+  private readonly goalScoredService = inject(GoalScoredService);
+  private readonly matchStore = inject(MatchDetailsStore);
 
-  protected readonly goalUpdateLoading = this.goalScoredStore.editLoading;
-  protected readonly goalUpdateError = this.goalScoredStore.editError;
+  private readonly _updateMutation = createMutation<null>();
+  private readonly goalUpdateLoading = this._updateMutation.loading;
+  private readonly goalUpdateError = this._updateMutation.error;
 
   goalScoredData = input.required<GoalScored>();
   homeTeamName = input<string>('Domicile');
   awayTeamName = input<string>('Extérieur');
   onDialogClosed = output<void>();
-  goalUpdated = output<void>();
 
   goalScoredModel = signal<GoalScoredFormModel>(GoalScoredFormModel.empty(''));
   GoalScoredFormModel = GoalScoredFormModel;
@@ -48,9 +51,9 @@ export class GoalScoredUpdateDialog {
       submission: {
         action: async () => {
           const goal = this.goalScoredData();
-          const result = await this.goalScoredStore.editGoal(goal.id, toGoalUpdateDto(this.goalScoredModel()));
-          if (result) {
-            this.goalUpdated.emit();
+          const result = await this._updateMutation.mutate(this.goalScoredService.editGoal(goal.id, toGoalUpdateDto(this.goalScoredModel())));
+          if (result.success) {
+            this.matchStore.reload();
             this.onDialogClosed.emit();
           }
         },

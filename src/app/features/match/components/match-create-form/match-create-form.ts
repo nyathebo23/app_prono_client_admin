@@ -1,6 +1,8 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { MatchCommandStore } from '../../stores/match-command-store';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
+import { MatchService } from '../../services/match-service';
 import { MatchFormModel, toMatchCreateDto } from '../../models/match-form-model';
+import { MatchQueryStore } from '../../stores/match-query-store';
 import { disabled, form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { futureDateConstraint, validateDatetime } from '../../../../shared/utils/forms/validation-rules';
 import { PlayerSex, playerSexes } from '../../../../shared/utils/enums/player-sex';
@@ -21,13 +23,14 @@ import { differentTeams } from '../../utils/form-validation-rules';
   styleUrls: ['./match-create-form.scss'],
 })
 export class MatchCreateForm {
-  private readonly matchCommandStore = inject(MatchCommandStore);
+  private readonly matchService = inject(MatchService);
   private readonly competitionQueryStore = inject(CompetitionQueryStore);
   private readonly competitionDetailsStore = inject(SingleCompetitionDetailsStore);
+  private readonly matchQueryStore = inject(MatchQueryStore);
+  private readonly _createMutation = createMutation<string>();
 
-  counteffect = 0;
-  isLoading = this.matchCommandStore.createLoading;
-  error = this.matchCommandStore.createError;
+  isLoading = this._createMutation.loading;
+  error = this._createMutation.error;
 
   matchModel = signal<MatchFormModel>(MatchFormModel.empty());
   playerSexes = playerSexes;
@@ -71,9 +74,14 @@ export class MatchCreateForm {
     {
       submission: {
         action: async () => {
-          const result = await this.matchCommandStore.createMatch(toMatchCreateDto(this.matchModel()));
-          if (result) {
-
+          const result = await this._createMutation.mutate(
+            this.matchService.createMatch(toMatchCreateDto(this.matchModel())),
+          );
+          if (result.success) {
+            this.matchModel.set(MatchFormModel.empty());
+            this.competitionDetailsStore.selectedCompetitionId.set(null);
+            this.matchQueryStore.matchesCompetitionResource.reload();
+            this.matchQueryStore.matchesLiveResource.reload();
           }
         },
       },
@@ -85,14 +93,12 @@ export class MatchCreateForm {
       const id = this.matchForm.competitionId().value();
       if (this.competitionDetailsStore.selectedCompetitionId() === (id || null)) return;
       this.competitionDetailsStore.selectedCompetitionId.set(id || null);
-      console.log("effect count ", ++this.counteffect);
       this.matchModel.update((current) => ({
         ...current,
         matchType:  this.shouldMatchBeRegular() ? MatchType.REGULAR : current.matchType,
         teamHomeId: '',
         teamAwayId: '',
       }));
-      console.log("effect count 2", ++this.counteffect);
     });
   }
 

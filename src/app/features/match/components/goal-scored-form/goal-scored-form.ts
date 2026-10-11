@@ -1,8 +1,10 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { GoalScoredFormModel, toGoalCreateDto } from '../../models/goal-scored-form-model';
 import { form, max, min, required } from '@angular/forms/signals';
-import { GoalScoredStore } from '../../stores/goal-scored-store';
 import { FormField, FormRoot } from '@angular/forms/signals';
+import { MatchDetailsStore } from '../../stores/match-details-store';
+import { GoalScoredService } from '../../services/goal-scored-service';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
 
 @Component({
   imports: [FormRoot, FormField],
@@ -11,10 +13,13 @@ import { FormField, FormRoot } from '@angular/forms/signals';
   templateUrl: './goal-scored-form.html',
 })
 export class GoalScoredForm {
-  private readonly goalScoredStore = inject(GoalScoredStore);
 
-  protected readonly goalCreateLoading = this.goalScoredStore.createLoading;
-  protected readonly goalCreateError = this.goalScoredStore.createError;
+  private readonly goalScoredService = inject(GoalScoredService);
+  private readonly matchStore = inject(MatchDetailsStore);
+
+  private readonly _createMutation = createMutation<string>();
+  private readonly goalCreateLoading = this._createMutation.loading;
+  private readonly goalCreateError = this._createMutation.error;
 
   matchId = input.required<string>();
   homeTeamName = input<string>('Domicile');
@@ -44,11 +49,11 @@ export class GoalScoredForm {
     {
       submission: {
         action: async () => {
-          const result = await this.goalScoredStore.createGoal(toGoalCreateDto(this.goalScoredModel()));
+          const result = await this._createMutation.mutate(this.goalScoredService.createGoal(toGoalCreateDto(this.goalScoredModel())));
           console.log('Goal creation result:', result);
-          if (result) {
-            this.goalCreated.emit();
-            this.goalScoredModel.set(GoalScoredFormModel.empty(this.matchId()));
+          if (result.success) {
+            this.matchStore.reload();
+            this.goalScoredForm().reset();
           }
         },
       },      

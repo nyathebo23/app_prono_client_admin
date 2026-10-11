@@ -26,12 +26,12 @@ export class TeamService {
       .pipe(map((dtos) => dtos.map((dto) => Team.fromTeamDto(dto))));
   }
 
-  createTeam(data: TeamCreateDto): Observable<TeamDto> {
-    return this.http.post<TeamDto>(API_ENDPOINTS.TEAM, data);
+  createTeam(data: TeamCreateDto): Observable<string> {
+    return this.http.post<string>(API_ENDPOINTS.TEAM, data);
   }
 
-  updateTeam(id: string, data: TeamUpdateDto): Observable<TeamDto> {
-    return this.http.patch<TeamDto>(`${API_ENDPOINTS.TEAM}/${id}`, data);
+  updateTeam(id: string, data: TeamUpdateDto): Observable<string> {
+    return this.http.patch<string>(`${API_ENDPOINTS.TEAM}/${id}`, data);
   }
 
   deleteTeam(id: string): Observable<void> {

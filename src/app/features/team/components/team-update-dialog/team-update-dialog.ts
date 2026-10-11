@@ -7,6 +7,8 @@ import { teamKinds } from '../../enums/team-kind';
 import { playerSexes } from '../../../../shared/utils/enums/player-sex';
 import { countries as countryOptions } from '../../../../shared/utils/countries';
 import { minLength, shouldNotStartWithSpace } from '../../../../shared/utils/forms/validation-rules';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
+import { TeamService } from '../../services/team-service';
 
 @Component({
   selector: 'app-team-update-dialog',
@@ -15,12 +17,16 @@ import { minLength, shouldNotStartWithSpace } from '../../../../shared/utils/for
   templateUrl: './team-update-dialog.html',
 })
 export class TeamUpdateDialog {
+
   private readonly teamStore = inject(TeamStore);
+  private readonly teamService = inject(TeamService);
 
   readonly teamData = input.required<Team>();
   readonly onDialogClosed = output<void>();
-  readonly isLoading = this.teamStore.updateLoading;
-  readonly error = this.teamStore.updateError;
+
+  private readonly _updateMutation = createMutation<string>();
+  readonly isLoading = this._updateMutation.loading;
+  readonly error = this._updateMutation.error;
 
   readonly teamKinds = teamKinds;
   readonly playerSexes = playerSexes;
@@ -54,13 +60,12 @@ export class TeamUpdateDialog {
           if (!team) {
             return;
           }
-
-          const success = await this.teamStore.updateTeam(
-            team.id,
-            toTeamCreateDto(this.teamModel()),
-          );
-          if (success) {
+          const result = await this._updateMutation.mutate(this.teamService.updateTeam(
+            team.id, toTeamCreateDto(this.teamModel())
+          ));
+          if (result.success) {
             this.onDialogClosed.emit();
+            this.teamStore.reload();
           }
         },
       },

@@ -1,4 +1,4 @@
-@if (match(); as currentMatch) {
+@if (matchDetails(); as currentMatch) {
   <div class="space-y-6">
     <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -37,15 +37,32 @@
           <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Statut</p>
           <select
             class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
-            (change)="updateMatchStatus($any($event.target).value)"
+            [value]="selectedMatchStatus() ?? currentMatch.status"
+            (change)="selectMatchStatus($any($event.target).value)"
           >
-            @for (status of matchStatusOptions; track status) {
-              <option [value]="status" [selected]="status === currentMatch.status">{{ matchStatusLabel(status) }}</option>
+            @for (status of matchStatusOptions(); track status) {
+              <option [value]="status" [selected]="currentMatch.status === status" >{{ matchStatusLabel(status) }}</option>
             }
           </select>
+          <button
+            type="button"
+            class="mt-3 w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            [disabled]="(selectedMatchStatus() ?? currentMatch.status) === currentMatch.status"
+            (click)="requestStatusChange()"
+          >
+            Appliquer le changement de statut
+          </button>
         </div>
       </div>
     </section>
+
+    @if (currentMatch.status === MatchStatus.PENALTY_SHOOTOUT && matchId()) {
+      <app-penalty-shootout-result-form
+        [matchId]="matchId()!"
+        [homeTeamName]="currentMatch.teamHome"
+        [awayTeamName]="currentMatch.teamAway"
+      />
+    }
 
     <div class="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
       <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -63,43 +80,24 @@
         } @else {
           <div class="space-y-3">
             @for (goal of currentMatch.goals; track goal.id) {
-              <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <div>
-                  <p class="font-medium text-slate-800">{{ goal.scorer }}</p>
-                  <p class="text-sm text-slate-500">
-                    {{ goal.teamHomeScored ? currentMatch.teamHome : currentMatch.teamAway }}
-                    • {{ goal.isOwnGoal ? 'but contre son camp' : goal.isPenalty ? 'penalty' : 'but standard' }}
-                  </p>
-                </div>
-                <div class="flex items-center gap-3">
-                  <p class="text-sm font-semibold text-slate-700">{{ goal.minute }}'</p>
-                  <button
-                    type="button"
-                    class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-                    (click)="openGoalUpdate(goal)"
-                  >
-                    Modifier
-                  </button>
-                </div>
-              </div>
+              <app-goal-scored-view-item
+                [goal]="goal"
+                [homeTeamName]="currentMatch.teamHome"
+                [awayTeamName]="currentMatch.teamAway"
+                [matchFinished]="currentMatch.status === MatchStatus.FINISHED"
+                (edit)="openGoalUpdate($event)"
+              />
             }
           </div>
         }
       </section>
 
       <aside class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        @if (statusError()) {
-          <div class="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            {{ statusError() }}
-          </div>
-        }
-
         @if (matchId()) {
           <app-goal-scored-form
             [matchId]="matchId()!"
             [homeTeamName]="currentMatch.teamHome"
             [awayTeamName]="currentMatch.teamAway"
-            (goalCreated)="refreshMatch()"
           />
         }
       </aside>
@@ -111,7 +109,15 @@
         [homeTeamName]="currentMatch.teamHome"
         [awayTeamName]="currentMatch.teamAway"
         (onDialogClosed)="closeGoalUpdate()"
-        (goalUpdated)="refreshMatch()"
+      />
+    }
+
+    @if (isStatusConfirmationOpen()) {
+      <app-match-status-change-confirm-dialog
+        [matchId]="matchId()!"
+        [currentStatus]="currentMatch.status"
+        [requestedStatus]="statusToConfirm() ?? currentMatch.status"
+        (cancelled)="cancelStatusChange()"
       />
     }
   </div>

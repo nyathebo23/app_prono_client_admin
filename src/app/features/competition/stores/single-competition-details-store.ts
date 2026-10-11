@@ -23,4 +23,8 @@ export class SingleCompetitionDetailsStore {
     loadCompetition(id: string | null): void {
         this.selectedCompetitionId.set(id);
     }
+
+    reload() {
+        this.competitionResource.reload();
+    }
 }

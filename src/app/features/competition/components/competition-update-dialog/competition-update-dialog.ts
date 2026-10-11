@@ -1,5 +1,4 @@
 import { Component, inject, signal, input, output, effect  } from '@angular/core';
-import { CompetitionStore } from '../../stores/competition-store';
 import { CompetitionFormModel, toCompetitionCreateDto } from '../../models/competition-form-model';
 import { form, required, FormRoot, FormField, min, max } from '@angular/forms/signals';
 import { futureDateConstraint, minLength, rangeDateValidity, shouldNotStartWithSpace, validateDatetime } from '../../../../shared/utils/forms/validation-rules';
@@ -10,6 +9,9 @@ import { teamKinds } from '../../../team/enums/team-kind';
 import { playerSexes } from '../../../../shared/utils/enums/player-sex';
 import { countries as countryOptions } from '../../../../shared/utils/countries';
 import { Competition } from '../../models/competition';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
+import { CompetitionQueryStore } from '../../stores/competition-query-store';
+import { CompetitionService } from '../../services/competition-service';
 
 
 @Component({
@@ -19,9 +21,12 @@ import { Competition } from '../../models/competition';
   templateUrl: './competition-update-dialog.html',
 })
 export class CompetitionUpdateDialog {
-  private readonly competitionStore = inject(CompetitionStore);
-  isLoading = this.competitionStore.updateLoading;
-  error = this.competitionStore.updateError;
+
+  private readonly competitionService = inject(CompetitionService);
+  private readonly competitionQueryStore = inject(CompetitionQueryStore);
+  private readonly _updateMutation = createMutation<null>();
+  isLoading = this._updateMutation.loading;
+  error = this._updateMutation.error;
 
   competitionData = input.required<Competition>();
 
@@ -63,7 +68,12 @@ export class CompetitionUpdateDialog {
     {
         submission: {
           action: async () => {
-            const result = this.competitionStore.updateCompetition(this.competitionData()!.id, toCompetitionCreateDto(this.competitionModel()));
+            const result = await this._updateMutation.mutate(
+              this.competitionService.updateCompetition(this.competitionData()!.id, toCompetitionCreateDto(this.competitionModel()))
+            );
+            if (result.success) {
+              this.competitionQueryStore.reloadCompetitions();
+            }
           }
         } 
     }

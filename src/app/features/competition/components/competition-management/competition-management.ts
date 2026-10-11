@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CompetitionList } from '../competition-list/competition-list';
 import { CompetitionForm } from '../competition-form/competition-form';
+import { CompetitionQueryStore } from '../../stores/competition-query-store';
 
 
 @Component({
@@ -8,6 +9,7 @@ import { CompetitionForm } from '../competition-form/competition-form';
   selector: 'app-competition-management',
   styleUrl: './competition-management.scss',
   templateUrl: './competition-management.html',
+  providers: [CompetitionQueryStore]
 })
 export class CompetitionManagement {
   readonly activeTab = signal<'list' | 'create'>('list');

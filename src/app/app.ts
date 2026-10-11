@@ -9,7 +9,7 @@ import { RouterOutlet } from '@angular/router';
   styleUrls: ['./app.scss'],
 })
 export class App  {
-  protected readonly title = signal('sportPredictAdmin');
+  private readonly title = signal('sportPredictAdmin');
 
 
 }

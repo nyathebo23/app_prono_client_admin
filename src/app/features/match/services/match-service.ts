@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { MatchCreateDto } from '../dtos/match-create-dto';
 import { MatchDto } from '../dtos/match-dto';
@@ -12,11 +12,9 @@ import { MatchFilterDto } from '../dtos/match-filter-dto';
 import { Match } from '../models/match';
 import { MatchSummarized } from '../models/match-summarized';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class MatchService {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getMatchesByCompetition(
     competitionId: string,
@@ -47,8 +45,8 @@ export class MatchService {
     return this.http.post<string>(`${API_ENDPOINTS.MATCH_COMMAND}/create`, data);
   }
 
-  updateMatch(id: string, data: MatchUpdateDto): Observable<string> {
-    return this.http.put<string>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/edit-infos`, data);
+  updateMatch(id: string, data: MatchUpdateDto): Observable<null> {
+    return this.http.put<null>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/edit-infos`, data);
   }
 
   changeMatchStatus(id: string, status: MatchStatus): Observable<null> {

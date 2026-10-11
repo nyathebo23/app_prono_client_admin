@@ -10,5 +10,5 @@ import { NgComponentOutlet } from '@angular/common';
   styleUrl: './home-layout.scss',
 })
 export class HomeLayout {
-  protected readonly sideNavItems = sideNavItems;
+  private readonly sideNavItems = sideNavItems;
 }

@@ -13,18 +13,18 @@ export class MatchInCompetitionList {
   private readonly matchQueryStore = inject(MatchQueryStore);
   private readonly competitionQueryStore = inject(CompetitionQueryStore);
 
-  protected readonly selectedCompetitionId = signal<string | null>(null);
+  private readonly selectedCompetitionId = signal<string | null>(null);
 
-  protected readonly competitions = this.competitionQueryStore.competitionsListResource.value;
+  private readonly competitions = this.competitionQueryStore.competitionsListResource.value;
 
-  protected readonly selectedCompetition = computed(() => 
+  private readonly selectedCompetition = computed(() => 
      this.competitions().find((competition) => competition.id === this.selectedCompetitionId()) ?? null
   );
 
-  protected readonly matches = this.matchQueryStore.matchesCompetitionResource.value;
+  private readonly matches = this.matchQueryStore.matchesCompetitionResource.value;
 
-  protected readonly matchesInCompetitionError = this.matchQueryStore.matchesCompetitionResourceError;
-  protected readonly matchesInCompetitionLoading = this.matchQueryStore.matchesCompetitionResource.isLoading;
+  private readonly matchesInCompetitionError = this.matchQueryStore.matchesCompetitionResourceError;
+  private readonly matchesInCompetitionLoading = this.matchQueryStore.matchesCompetitionResource.isLoading;
 
   constructor() {
     effect(() => {
@@ -49,7 +49,7 @@ export class MatchInCompetitionList {
     });
   }
 
-  protected selectCompetition(competitionId: string): void {
+  private selectCompetition(competitionId: string): void {
     this.selectedCompetitionId.set(competitionId);
   }
 }

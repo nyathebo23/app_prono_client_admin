@@ -1,5 +1,4 @@
 import { Component, effect, inject, output, signal } from '@angular/core';
-import { CompetitionStore } from '../../stores/competition-store';
 import { CompetitionFormModel, toCompetitionCreateDto } from '../../models/competition-form-model';
 import { form, required, FormRoot, FormField, min, max, disabled } from '@angular/forms/signals';
 import {
@@ -15,6 +14,9 @@ import { competitionPhases } from '../../enums/competition-phase';
 import { TeamKind, teamKinds } from '../../../team/enums/team-kind';
 import { playerSexes } from '../../../../shared/utils/enums/player-sex';
 import { countries as countryOptions } from '../../../../shared/utils/countries';
+import { createMutation } from '../../../../shared/mutation/create-mutation';
+import { CompetitionService } from '../../services/competition-service';
+import { CompetitionQueryStore } from '../../stores/competition-query-store';
 
 @Component({
   selector: 'app-competition-form',
@@ -23,9 +25,13 @@ import { countries as countryOptions } from '../../../../shared/utils/countries'
   styleUrl: './competition-form.scss',
 })
 export class CompetitionForm {
-  private readonly competitionStore = inject(CompetitionStore);
-  isLoading = this.competitionStore.createLoading;
-  error = this.competitionStore.createError;
+
+
+  private readonly competitionService = inject(CompetitionService);
+  private readonly competitionQueryStore = inject(CompetitionQueryStore);
+  private readonly _createMutation = createMutation<string>();
+  isLoading = this._createMutation.loading;
+  error = this._createMutation.error;
 
 
   onMoveToListTab = output<void>();
@@ -91,13 +97,12 @@ export class CompetitionForm {
     {
       submission: {
         action: async () => {
-          const success = await this.competitionStore.createCompetition(
-            toCompetitionCreateDto(this.competitionModel()),
-          );
-
-          if (success) {
-            //this.competitionModel.set(CompetitionFormModel.empty());
-            this.moveToListTab();
+          const result = await this._createMutation.mutate(this.competitionService.createCompetition(
+            toCompetitionCreateDto(this.competitionModel())
+          ));
+          if (result.success) {
+              this.competitionQueryStore.reloadCompetitions();
+              this.moveToListTab();
           }
         },
       },

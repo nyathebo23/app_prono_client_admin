@@ -20,4 +20,8 @@ export class MatchDetailsStore {
     readonly matchDetailsResourceError = computed(
         () => createApiErrorResponse(this.matchDetailsResource.error())
     );
+
+    reload() {
+        this.matchDetailsResource.reload();
+    }
 }

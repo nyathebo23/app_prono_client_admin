@@ -2,35 +2,61 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatchStatus } from '../../enums/match-status';
+import { MatchType } from '../../enums/match-type';
 import { GoalScored } from '../../models/goal-scored';
-import { Match } from '../../models/match';
-import { MatchCommandStore } from '../../stores/match-command-store';
 import { MatchDetailsStore } from '../../stores/match-details-store';
 import { getMatchStatusLabel } from '../../utils/match-status-label';
 import { GoalScoredForm } from '../goal-scored-form/goal-scored-form';
+import { GoalScoredViewItem } from '../goal-scored-view-item/goal-scored-view-item';
 import { GoalScoredUpdateDialog } from '../goal-scored-update-dialog/goal-scored-update-dialog';
+import { MatchStatusChangeConfirmDialog } from '../match-status-change-confirm-dialog/match-status-change-confirm-dialog';
+import { PenaltyShootoutResultForm } from '../penalty-shootout-result-form/penalty-shootout-result-form';
 
 @Component({
   selector: 'app-match-details',
-  imports: [DatePipe, GoalScoredForm, GoalScoredUpdateDialog],
+  imports: [
+    DatePipe,
+    GoalScoredForm,
+    GoalScoredViewItem,
+    GoalScoredUpdateDialog,
+    MatchStatusChangeConfirmDialog,
+    PenaltyShootoutResultForm,
+  ],
   styleUrl: './match-details.scss',
   templateUrl: './match-details.html',
 })
 export class MatchDetails {
 
   private readonly route = inject(ActivatedRoute);
-  private readonly matchCommandStore = inject(MatchCommandStore);
   private readonly matchDetailsStore = inject(MatchDetailsStore);
 
-  protected readonly matchId = this.matchDetailsStore.matchId;
-  protected readonly match = computed<Match | null>(() => this.matchDetailsStore.matchDetailsResource.value());
-  protected readonly matchStatusLabel = getMatchStatusLabel;
+  private readonly matchId = this.matchDetailsStore.matchId;
+  private readonly matchDetails = this.matchDetailsStore.matchDetailsResource.value;
+  
+  private readonly matchStatusLabel = getMatchStatusLabel;
+  private readonly MatchStatus = MatchStatus;
+  private readonly selectedMatchStatus = signal<MatchStatus | null>(null);
+  private readonly statusToConfirm = signal<MatchStatus | null>(null);
+  private readonly isStatusConfirmationOpen = signal(false);
 
-  protected readonly matchStatusOptions: MatchStatus[] = Object.values(MatchStatus);
+  private readonly matchStatusOptions = computed<MatchStatus[]>(() => {
+    const currentMatch = this.matchDetails();
+    if (currentMatch?.matchType === MatchType.KNOCKOUT) {
+      return Object.values(MatchStatus);
+    }
 
-  protected readonly statusError = this.matchCommandStore.changeStatusError;
-  protected readonly statusLoading = this.matchCommandStore.changeStatusLoading;
-  protected readonly goalToEdit = signal<GoalScored | null>(null);
+    return [
+      MatchStatus.SCHEDULED,
+      MatchStatus.FIRST_HALF,
+      MatchStatus.HALF_TIME,
+      MatchStatus.SECOND_HALF,
+      MatchStatus.FINISHED,
+      MatchStatus.CANCELLED,
+      MatchStatus.POSTPONED,
+    ];
+  });
+
+  private readonly goalToEdit = signal<GoalScored | null>(null);
 
 
   constructor() {
@@ -38,40 +64,43 @@ export class MatchDetails {
       const idFromRoute = this.route.snapshot.paramMap.get('id');
       if (idFromRoute) {
         this.matchDetailsStore.matchId.set(idFromRoute);
-        console.log(this.match());
       }
     });
   }
 
-  protected async updateMatchStatus(status: string): Promise<void> {
-    const id = this.matchId();
-    const current = this.match();
-    const selectedStatus = this.matchStatusOptions.find((option) => option === status);
-
-    if (!id || !current || !selectedStatus) {
-      return;
-    }
-
-    const success = await this.matchCommandStore.changeMatchStatus(id, selectedStatus);
-    if (success) {
-      this.refreshMatch();
+  private selectMatchStatus(status: MatchStatus): void {
+    const selectedStatus = this.matchStatusOptions().find((option) => option === status);
+    if (selectedStatus) {
+      this.selectedMatchStatus.set(selectedStatus);
     }
   }
 
-  protected refreshMatch(): void {
-    this.matchDetailsStore.matchDetailsResource.reload();
+  private requestStatusChange(): void {
+    const currentMatch = this.matchDetails();
+    const selected = this.selectedMatchStatus() ?? currentMatch?.status;
+
+    if (currentMatch && selected && selected !== currentMatch.status) {
+      this.statusToConfirm.set(selected);
+      this.isStatusConfirmationOpen.set(true);
+    }
   }
 
-  protected openGoalUpdate(goal: GoalScored): void {
+  private cancelStatusChange(): void {
+    this.isStatusConfirmationOpen.set(false);
+    this.statusToConfirm.set(null);
+    this.selectedMatchStatus.set(null);
+  }
+
+  private openGoalUpdate(goal: GoalScored): void {
     this.goalToEdit.set(goal);
   }
 
-  protected closeGoalUpdate(): void {
+  private closeGoalUpdate(): void {
     this.goalToEdit.set(null);
   }
 
-  protected scoreLabel(): string {
-    const currentMatch = this.match();
+  private scoreLabel(): string {
+    const currentMatch = this.matchDetails();
 
     if (!currentMatch) {
       return '–';
