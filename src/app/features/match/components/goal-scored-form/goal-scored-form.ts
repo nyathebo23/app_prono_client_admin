@@ -18,8 +18,8 @@ export class GoalScoredForm {
   private readonly matchStore = inject(MatchDetailsStore);
 
   private readonly _createMutation = createMutation<string>();
-  private readonly goalCreateLoading = this._createMutation.loading;
-  private readonly goalCreateError = this._createMutation.error;
+  protected readonly goalCreateLoading = this._createMutation.loading;
+  protected readonly goalCreateError = this._createMutation.error;
 
   matchId = input.required<string>();
   homeTeamName = input<string>('Domicile');

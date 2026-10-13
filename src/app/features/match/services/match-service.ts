@@ -46,7 +46,7 @@ export class MatchService {
   }
 
   updateMatch(id: string, data: MatchUpdateDto): Observable<null> {
-    return this.http.put<null>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/edit-infos`, data);
+    return this.http.patch<null>(`${API_ENDPOINTS.MATCH_COMMAND}/${id}/edit-infos`, data);
   }
 
   changeMatchStatus(id: string, status: MatchStatus): Observable<null> {

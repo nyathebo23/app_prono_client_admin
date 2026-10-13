@@ -1,3 +1,10 @@
+@if (competitionsError(); as resourceError) {
+  <app-resource-error [error]="resourceError" (retry)="reloadCompetitions()" />
+} @else if (competitionsLoading()) {
+  <div class="flex min-h-52 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-slate-500">
+    Chargement des compétitions…
+  </div>
+} @else {
 <div class="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
   <aside class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
     <div class="mb-4 flex items-center justify-between">
@@ -47,21 +54,52 @@
         </div>
       </div>
 
+      <div class="mb-4 inline-flex max-w-full rounded-lg bg-slate-100 p-1" role="group" aria-label="Filtrer les matchs">
+        <button
+          type="button"
+          class="rounded-md px-3 py-2 text-sm font-medium transition hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-1"
+          [class.bg-white]="selectedMatchGroup() === 'live-and-scheduled'"
+          [class.text-slate-900]="selectedMatchGroup() === 'live-and-scheduled'"
+          [class.text-slate-600]="selectedMatchGroup() !== 'live-and-scheduled'"
+          [class.shadow-sm]="selectedMatchGroup() === 'live-and-scheduled'"
+          [attr.aria-pressed]="selectedMatchGroup() === 'live-and-scheduled'"
+          (click)="selectMatchGroup('live-and-scheduled')"
+        >
+          Live et programmés
+          <span class="ml-1.5 text-xs tabular-nums">{{ liveAndScheduledMatches().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="rounded-md px-3 py-2 text-sm font-medium transition hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-1"
+          [class.bg-white]="selectedMatchGroup() === 'other'"
+          [class.text-slate-900]="selectedMatchGroup() === 'other'"
+          [class.text-slate-600]="selectedMatchGroup() !== 'other'"
+          [class.shadow-sm]="selectedMatchGroup() === 'other'"
+          [attr.aria-pressed]="selectedMatchGroup() === 'other'"
+          (click)="selectMatchGroup('other')"
+        >
+          Autres matchs
+          <span class="ml-1.5 text-xs tabular-nums">{{ otherMatches().length }}</span>
+        </button>
+      </div>
+
       @if (matchesInCompetitionLoading()) {
         <div class="flex min-h-52 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-500">
           Chargement des matchs…
         </div>
       } @else if (matchesInCompetitionError()) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {{ matchesInCompetitionError()?.message ?? 'Erreur lors du chargement des matchs.' }}
-        </div>
+        <app-resource-error [error]="matchesInCompetitionError()" (retry)="reloadMatches()" />
       } @else {
-        <div class="space-y-4">
-          @for (match of matches(); track match.id) {
+        <div class="grid gap-3 lg:grid-cols-2">
+          @for (match of visibleMatches(); track match.id) {
             <app-match-view-item [match]="match" />
           } @empty {
-            <div class="flex min-h-52 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-500">
-              Aucun match programmé pour cette compétition.
+            <div class="col-span-full flex min-h-52 w-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-center text-slate-500">
+              @if (selectedMatchGroup() === 'live-and-scheduled') {
+                Aucun match en direct ou programmé pour cette compétition.
+              } @else {
+                Aucun autre match pour cette compétition.
+              }
             </div>
           }
         </div>
@@ -69,3 +107,4 @@
     }
   </section>
 </div>
+}

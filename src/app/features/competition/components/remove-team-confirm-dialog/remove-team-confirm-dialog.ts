@@ -24,8 +24,8 @@ export class RemoveTeamConfirmDialog {
 
   private readonly selectedTeamId = signal('');
   private readonly _removeMutation = createMutation<null>();
-  private readonly removeLoading = this._removeMutation.loading;
-  private readonly removeError = this._removeMutation.error;
+  protected readonly removeLoading = this._removeMutation.loading;
+  protected readonly removeError = this._removeMutation.error;
 
   constructor() {
     effect(() => this.selectedTeamId.set(this.teamId()));

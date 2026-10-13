@@ -1,1 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
+
+.live-match-indicator {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	color: #047857;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+}
+
+.live-match-indicator__track {
+	height: 0.25rem;
+	min-width: 3rem;
+	flex: 1;
+	overflow: hidden;
+	border-radius: 9999px;
+	background: #d1fae5;
+}
+
+.live-match-indicator__bar {
+	display: block;
+	height: 100%;
+	width: 25%;
+	border-radius: inherit;
+	background: #059669;
+	animation: live-match-sweep 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes live-match-sweep {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(300%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.live-match-indicator__bar {
+		margin-inline-start: 37.5%;
+		animation: none;
+	}
+}

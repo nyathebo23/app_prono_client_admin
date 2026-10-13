@@ -37,7 +37,7 @@
           [attr.aria-invalid]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
         >
           <option value="">Choisir une compétition</option>
-          @for (competition of competitions.value(); track competition.id) {
+          @for (competition of competitionsBySex(); track competition.id) {
             <option [value]="competition.id">{{ competition.name }}</option>
           }
         </select>

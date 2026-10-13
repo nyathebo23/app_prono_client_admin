@@ -7,6 +7,7 @@ import { MatchList } from './features/match/components/match-list/match-list';
 import { MatchLiveList } from './features/match/components/match-live-list/match-live-list';
 import { MatchCreateForm } from './features/match/components/match-create-form/match-create-form';
 import { MatchInCompetitionList } from './features/match/components/match-in-competition-list/match-in-competition-list';
+import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,7 @@ export const routes: Routes = [
       {
         path: 'team',
         component: TeamManagement,
+        canActivate: [authGuard],
       },
       {
         path: 'match',
@@ -45,6 +47,7 @@ export const routes: Routes = [
           {
             path: 'create',
             component: MatchCreateForm,
+            canActivate: [authGuard],
           },
           {
             path: ':id',

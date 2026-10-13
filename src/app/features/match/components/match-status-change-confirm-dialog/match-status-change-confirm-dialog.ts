@@ -21,13 +21,13 @@ export class MatchStatusChangeConfirmDialog {
   readonly currentStatus = input.required<MatchStatus>();
   readonly requestedStatus = input.required<MatchStatus>();
 
-  readonly cancelled = output<void>();
+  readonly onDialogClosed = output<void>();
 
-  private readonly statusLabel = getMatchStatusLabel;
-  private readonly loading = this._statusChangeMutation.loading;
-  private readonly error = this._statusChangeMutation.error;
+  protected readonly statusLabel = getMatchStatusLabel;
+  protected readonly loading = this._statusChangeMutation.loading;
+  protected readonly error = this._statusChangeMutation.error;
 
-  private async confirmStatusChange(): Promise<void> {
+  protected async confirmStatusChange(): Promise<void> {
     const result = await this._statusChangeMutation.mutate(
       this.matchService.changeMatchStatus(
         this.matchId(),
@@ -36,6 +36,7 @@ export class MatchStatusChangeConfirmDialog {
     );
     if (result.success) {
       this.matchStore.reload();
+      this.onDialogClosed.emit();
     }
   }
 }

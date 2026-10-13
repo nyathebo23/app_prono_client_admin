@@ -28,6 +28,12 @@ export class CompetitionService {
     );
   }
 
+  getActiveOrUpcomingCompetitions(): Observable<Competition[]> {
+    return this.http.get<CompetitionDto[]>(`${API_ENDPOINTS.COMPETITION}/active-or-upcoming`).pipe(
+      map((dtos) => dtos.map((dto) => Competition.fromCompetitionDto(dto))),
+    );
+  }
+
   getActiveOrUpcomingCompetitionsBySex(playerSex: PlayerSex): Observable<Competition[]> {
     const params = new HttpParams().set('playerSex', String(playerSex));
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { sideNavItems } from './side-nav-items';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgComponentOutlet } from '@angular/common';
@@ -10,5 +10,10 @@ import { NgComponentOutlet } from '@angular/common';
   styleUrl: './home-layout.scss',
 })
 export class HomeLayout {
-  private readonly sideNavItems = sideNavItems;
+  protected readonly sideNavItems = sideNavItems;
+  protected readonly sidebarOpen = signal(true);
+
+  protected toggleSidebar(): void {
+    this.sidebarOpen.update((open) => !open);
+  }
 }

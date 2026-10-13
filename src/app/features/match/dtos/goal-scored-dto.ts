@@ -7,4 +7,5 @@ export interface GoalScoredDto {
     isOwnGoal: boolean;
     isPenalty: boolean;
     teamHomeScored: boolean;
+    isCanceled: boolean;
 }

@@ -16,16 +16,10 @@ export class GoalScoredViewItem {
   readonly edit = output<GoalScored>();
   readonly cancelled = output<void>();
 
-  private readonly isCancelConfirmationOpen = signal(false);
+  protected readonly isCancelConfirmationOpen = signal(false);
 
-  private handleCancelResult(success: boolean): void {
-    if (success) {
-      this.isCancelConfirmationOpen.set(false);
-      this.cancelled.emit();
-    }
-  }
 
-  private closeCancelConfirmation(): void {
+  protected closeCancelConfirmation(): void {
     this.isCancelConfirmationOpen.set(false);
   }
 }

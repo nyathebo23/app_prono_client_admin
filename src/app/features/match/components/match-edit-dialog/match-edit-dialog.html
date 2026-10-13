@@ -21,6 +21,40 @@
 					{{ error() }}
 				</div>
 			}
+			<div>
+				<label for="player-sex" class="mb-2 block text-sm font-medium text-slate-700">Sexe des joueurs</label>
+				<select
+					id="player-sex"
+					class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+					[value]="selectedSex() ?? ''"
+					[disabled]="selectedSex() === null"
+					(change)="onSexChange($any($event.target).value)"
+				>
+				@if (selectedSex() === null) {
+					<option value="" disabled selected>Chargement du sexe…</option>
+				}
+				@for (playerSex of playerSexes; track playerSex.value) {
+					<option [value]="playerSex.value" >{{ playerSex.label }}</option>
+				}
+				</select>
+			</div>
+
+			<div>
+				<label for="competition" class="mb-2 block text-sm font-medium text-slate-700">Compétition</label>
+				<select
+					id="competition"
+					class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-100"
+					[formField]="matchForm.competitionId"
+					[class.border-red-500]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
+					[class.bg-red-50]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
+					[attr.aria-invalid]="matchForm.competitionId().dirty() && matchForm.competitionId().errors().length > 0"
+				>
+				<option value="">Choisir une compétition</option>
+				@for (competition of competitionsBySex(); track competition.id) {
+					<option [value]="competition.id">{{ competition.name }}</option>
+				}
+				</select>
+			</div>
 
 			<div class="grid gap-4 sm:grid-cols-2">
 				<div>

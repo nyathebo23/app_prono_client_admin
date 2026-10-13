@@ -4,13 +4,13 @@ import { Competition } from '../../models/competition';
 import { CompetitionUpdateDialog } from '../competition-update-dialog/competition-update-dialog';
 import { RouterLink } from '@angular/router';
 import { CompetitionQueryStore } from '../../stores/competition-query-store';
+import { ResourceError } from '../../../../shared/components/resource-error/resource-error';
 
 @Component({
   selector: 'app-competition-list',
-  imports: [EmptyTable, CompetitionUpdateDialog, RouterLink],
+  imports: [EmptyTable, CompetitionUpdateDialog, RouterLink, ResourceError],
   templateUrl: './competition-list.html',
   styleUrl: './competition-list.scss',
-  providers: [CompetitionQueryStore]
 })
 export class CompetitionList {
 
@@ -32,6 +32,10 @@ export class CompetitionList {
 
   closeUpdateDialog() {
     this.modalUpdateOpen.set(false);
+  }
+
+  reloadCompetitions(): void {
+    this.competitionQueryStore.reloadCompetitions();
   }
 
 }

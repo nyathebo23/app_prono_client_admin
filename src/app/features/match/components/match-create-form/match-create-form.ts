@@ -29,15 +29,19 @@ export class MatchCreateForm {
   private readonly matchQueryStore = inject(MatchQueryStore);
   private readonly _createMutation = createMutation<string>();
 
-  isLoading = this._createMutation.loading;
-  error = this._createMutation.error;
+  protected readonly isLoading = this._createMutation.loading;
+  protected readonly error = this._createMutation.error;
 
   matchModel = signal<MatchFormModel>(MatchFormModel.empty());
   playerSexes = playerSexes;
   MatchType = MatchType;
 
-  selectedSex = this.competitionQueryStore.competitionPlayerSex;
-  competitions = this.competitionQueryStore.competitionsActiveOrUpcomingResource;
+  protected readonly selectedSex = signal<PlayerSex>(PlayerSex.MALE);
+  protected readonly competitionsResource = this.competitionQueryStore.competitionsActiveOrUpcomingResource;
+  protected readonly competitions = this.competitionsResource.value;
+  protected readonly competitionsBySex = computed(() =>
+    this.competitions().filter((competition) => competition.playerSex === this.selectedSex()),
+  );
   competitionSelected = this.competitionDetailsStore.competitionResource;
   teams = computed(() => this.getTeams(this.competitionSelected.value()?.teamsInCompetition));
 
@@ -59,7 +63,7 @@ export class MatchCreateForm {
       required(schemaPath.competitionId, { message: "Vous devez choisir une compétition" }),
 
       disabled(schemaPath.competitionId, {
-        when: () => this.competitions.isLoading(),
+        when: () => this.competitionsResource.isLoading(),
       });
       disabled(schemaPath.teamHomeId, { 
         when: () => !this.matchModel().competitionId || this.competitionSelected.isLoading(), 
@@ -92,7 +96,7 @@ export class MatchCreateForm {
     effect(() => {
       const id = this.matchForm.competitionId().value();
       if (this.competitionDetailsStore.selectedCompetitionId() === (id || null)) return;
-      this.competitionDetailsStore.selectedCompetitionId.set(id || null);
+      this.competitionDetailsStore.selectedCompetitionId.set(id);
       this.matchModel.update((current) => ({
         ...current,
         matchType:  this.shouldMatchBeRegular() ? MatchType.REGULAR : current.matchType,
@@ -108,7 +112,7 @@ export class MatchCreateForm {
   }
 
   onSexChange(sex: PlayerSex): void {
-    this.competitionQueryStore.competitionPlayerSex.set(sex);
+    this.selectedSex.set(sex);
     this.competitionDetailsStore.selectedCompetitionId.set(null);
     this.matchModel.update((m) => ({ ...m, competitionId: '', teamHomeId: '', teamAwayId: '' }));
   }

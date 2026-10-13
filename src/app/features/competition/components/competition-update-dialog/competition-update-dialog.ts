@@ -25,8 +25,8 @@ export class CompetitionUpdateDialog {
   private readonly competitionService = inject(CompetitionService);
   private readonly competitionQueryStore = inject(CompetitionQueryStore);
   private readonly _updateMutation = createMutation<null>();
-  isLoading = this._updateMutation.loading;
-  error = this._updateMutation.error;
+  protected readonly isLoading = this._updateMutation.loading;
+  protected readonly error = this._updateMutation.error;
 
   competitionData = input.required<Competition>();
 

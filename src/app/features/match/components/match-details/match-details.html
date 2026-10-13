@@ -1,6 +1,21 @@
-@if (matchDetails(); as currentMatch) {
+@if (matchDetailsLoading()) {
+  <div class="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm" role="status">
+    Chargement du match…
+  </div>
+} @else if (matchDetailsError(); as resourceError) {
+  <app-resource-error [error]="resourceError" (retry)="reloadMatch()" />
+} @else if (matchDetails(); as currentMatch) {
   <div class="space-y-6">
     <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      @if (currentMatch.isInProgress) {
+        <div class="live-match-indicator mb-4" role="status">
+          <span>EN DIRECT</span>
+          <div class="live-match-indicator__track" aria-hidden="true">
+            <span class="live-match-indicator__bar"></span>
+          </div>
+        </div>
+      }
+
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Match</p>
@@ -12,9 +27,20 @@
           </p>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-right">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Score</p>
-          <div class="mt-2 text-2xl font-bold text-slate-900">{{ scoreLabel() }}</div>
+        <div class="flex items-center gap-3">
+          @if (currentMatch.status === MatchStatus.SCHEDULED) {
+            <button
+              type="button"
+              class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+              (click)="openMatchEditDialog()"
+            >
+              Modifier le match
+            </button>
+          }
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-right">
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Score</p>
+            <div class="mt-2 text-2xl font-bold text-slate-900">{{ scoreLabel() }}</div>
+          </div>
         </div>
       </div>
 
@@ -112,17 +138,24 @@
       />
     }
 
+    @if (isMatchEditDialogOpen()) {
+      <app-match-edit-dialog
+        [match]="currentMatch"
+        (onDialogClosed)="closeMatchEditDialog()"
+      />
+    }
+
     @if (isStatusConfirmationOpen()) {
       <app-match-status-change-confirm-dialog
         [matchId]="matchId()!"
         [currentStatus]="currentMatch.status"
         [requestedStatus]="statusToConfirm() ?? currentMatch.status"
-        (cancelled)="cancelStatusChange()"
+        (onDialogClosed)="cancelStatusChange()"
       />
     }
   </div>
 } @else {
-  <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
-    Chargement du match…
+  <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm" role="status">
+    Match introuvable.
   </div>
 }

@@ -8,9 +8,10 @@ import { SingleCompetitionDetailsStore } from '../../stores/single-competition-d
 import { TeamInCompetition } from '../../models/team-in-competition';
 import { DeleteTeamConfirmDialog } from '../delete-team-confirm-dialog/delete-team-confirm-dialog';
 import { RemoveTeamConfirmDialog } from '../remove-team-confirm-dialog/remove-team-confirm-dialog';
+import { ResourceError } from '../../../../shared/components/resource-error/resource-error';
 
 @Component({
-  imports: [DatePipe, RouterLink, CompetitionAddTeamForm, DeleteTeamConfirmDialog, RemoveTeamConfirmDialog],
+  imports: [DatePipe, RouterLink, CompetitionAddTeamForm, DeleteTeamConfirmDialog, RemoveTeamConfirmDialog, ResourceError],
   selector: 'app-competition-details',
   styleUrl: './competition-details.scss',
   templateUrl: './competition-details.html',
@@ -47,5 +48,9 @@ export class CompetitionDetails {
 
   closeDeleteTeamDialog(): void {
     this.teamToDelete.set(null);
+  }
+
+  reloadCompetition(): void {
+    this.competitionsDetailsStore.reload();
   }
 }

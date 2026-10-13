@@ -18,8 +18,8 @@ export class GoalScoredUpdateDialog {
   private readonly matchStore = inject(MatchDetailsStore);
 
   private readonly _updateMutation = createMutation<null>();
-  private readonly goalUpdateLoading = this._updateMutation.loading;
-  private readonly goalUpdateError = this._updateMutation.error;
+  protected readonly goalUpdateLoading = this._updateMutation.loading;
+  protected readonly goalUpdateError = this._updateMutation.error;
 
   goalScoredData = input.required<GoalScored>();
   homeTeamName = input<string>('Domicile');

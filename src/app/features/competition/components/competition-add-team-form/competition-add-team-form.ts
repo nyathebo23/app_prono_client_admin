@@ -21,12 +21,12 @@ export class CompetitionAddTeamForm implements OnInit {
   private readonly teamQueryStore = inject(TeamQueryStore);
 
 
-  private readonly selectedTeamId = signal('');
+  protected readonly selectedTeamId = signal('');
   private readonly _enrollMutation = createMutation<string>();
-  private readonly enrollLoading = this._enrollMutation.loading;
-  private readonly enrollError = this._enrollMutation.error;
+  protected readonly enrollLoading = this._enrollMutation.loading;
+  protected readonly enrollError = this._enrollMutation.error;
 
-  private readonly teamsResource = this.teamQueryStore.teamsResource;
+  protected readonly teamsResource = this.teamQueryStore.teamsResource;
   private readonly teamsResourceError = this.teamQueryStore.teamsResourceError;
   
   readonly competition = input.required<CompetitionExtended>();

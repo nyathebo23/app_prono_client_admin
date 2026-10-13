@@ -6,6 +6,7 @@ import { MatchService } from '../services/match-service';
 
 @Service()
 export class MatchQueryStore {
+
   private readonly matchService = inject(MatchService);
 
   private readonly competitionId = signal<string | null>(null);

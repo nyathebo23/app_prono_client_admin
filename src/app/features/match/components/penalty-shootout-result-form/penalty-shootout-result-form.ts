@@ -21,11 +21,11 @@ export class PenaltyShootoutResultForm {
   readonly homeTeamName = input.required<string>();
   readonly awayTeamName = input.required<string>();
 
-  private readonly isLoading = this._saveMutation.loading;
-  private readonly error = this._saveMutation.error;
+  protected readonly isLoading = this._saveMutation.loading;
+  protected readonly error = this._saveMutation.error;
   private readonly resultModel = signal<SetPenShootoutResultDto>({ scoreTeamHome: 0, scoreTeamAway: 0 });
 
-  private readonly resultForm = form(
+  protected readonly resultForm = form(
     this.resultModel,
     (schemaPath) => {
       required(schemaPath.scoreTeamHome, { message: 'Renseignez le nombre de tirs au but' });

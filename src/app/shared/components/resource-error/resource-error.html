@@ -1,0 +1,32 @@
+@if (error(); as apiError) {
+	<section
+		role="alert"
+		aria-live="assertive"
+		class="flex flex-col gap-4 rounded-xl border border-red-200 bg-red-50 p-5 text-red-950 sm:flex-row sm:items-start sm:justify-between"
+	>
+		<div class="flex min-w-0 items-start gap-3">
+			<svg class="mt-0.5 h-5 w-5 shrink-0 text-red-700" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0-11a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 7Zm0 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+			</svg>
+			<div class="min-w-0">
+				<h2 class="font-semibold">{{ title() }}</h2>
+				<p class="mt-1 whitespace-pre-line break-words text-sm text-red-900">{{ apiError.message }}</p>
+				@if (apiError.status) {
+					<p class="mt-2 text-xs font-medium text-red-800">Code HTTP {{ apiError.status }}</p>
+				}
+			</div>
+		</div>
+
+		<button
+			type="button"
+			class="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-red-300 bg-white px-3 py-2 text-sm font-semibold text-red-900 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:self-center"
+			(click)="retry.emit()"
+		>
+			<svg class="h-4 w-4" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.705.75.75 0 0 0-1.06 1.06 7 7 0 0 0 11.711-3.445.75.75 0 0 0-1.45-.32ZM4.688 8.576a5.5 5.5 0 0 1 9.201-2.705.75.75 0 1 0 1.06-1.06A7 7 0 0 0 3.238 8.256a.75.75 0 1 0 1.45.32Z" clip-rule="evenodd" />
+				<path d="M4.25 3.75a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1 0-1.5H3.5V4.5a.75.75 0 0 1 .75-.75Zm11.5 12.5a.75.75 0 0 1-.75-.75v-3a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H16.5v2.25a.75.75 0 0 1-.75.75Z" />
+			</svg>
+			Réessayer
+		</button>
+	</section>
+}

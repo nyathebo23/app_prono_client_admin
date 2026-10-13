@@ -30,13 +30,13 @@ export class CompetitionForm {
   private readonly competitionService = inject(CompetitionService);
   private readonly competitionQueryStore = inject(CompetitionQueryStore);
   private readonly _createMutation = createMutation<string>();
-  isLoading = this._createMutation.loading;
-  error = this._createMutation.error;
+  protected readonly isLoading = this._createMutation.loading;
+  protected readonly error = this._createMutation.error;
 
 
   onMoveToListTab = output<void>();
 
-  moveToListTab() {
+  private moveToListTab() {
     this.onMoveToListTab.emit();
   }
 

@@ -11,6 +11,9 @@ import { GoalScoredViewItem } from '../goal-scored-view-item/goal-scored-view-it
 import { GoalScoredUpdateDialog } from '../goal-scored-update-dialog/goal-scored-update-dialog';
 import { MatchStatusChangeConfirmDialog } from '../match-status-change-confirm-dialog/match-status-change-confirm-dialog';
 import { PenaltyShootoutResultForm } from '../penalty-shootout-result-form/penalty-shootout-result-form';
+import { MatchEditDialog } from '../match-edit-dialog/match-edit-dialog';
+import { MatchDetailsLiveService } from '../../services/match-details-live-service';
+import { ResourceError } from '../../../../shared/components/resource-error/resource-error';
 
 @Component({
   selector: 'app-match-details',
@@ -21,6 +24,8 @@ import { PenaltyShootoutResultForm } from '../penalty-shootout-result-form/penal
     GoalScoredUpdateDialog,
     MatchStatusChangeConfirmDialog,
     PenaltyShootoutResultForm,
+    MatchEditDialog,
+    ResourceError,
   ],
   styleUrl: './match-details.scss',
   templateUrl: './match-details.html',
@@ -30,16 +35,19 @@ export class MatchDetails {
   private readonly route = inject(ActivatedRoute);
   private readonly matchDetailsStore = inject(MatchDetailsStore);
 
-  private readonly matchId = this.matchDetailsStore.matchId;
-  private readonly matchDetails = this.matchDetailsStore.matchDetailsResource.value;
+  private readonly matchLiveDetailsService = inject(MatchDetailsLiveService);
+  protected readonly matchId = this.matchDetailsStore.matchId;
+  protected readonly matchDetails = this.matchDetailsStore.matchDetailsResource.value;
+  protected readonly matchDetailsLoading = this.matchDetailsStore.matchDetailsResource.isLoading;
+  protected readonly matchDetailsError = this.matchDetailsStore.matchDetailsResourceError;
   
-  private readonly matchStatusLabel = getMatchStatusLabel;
-  private readonly MatchStatus = MatchStatus;
-  private readonly selectedMatchStatus = signal<MatchStatus | null>(null);
-  private readonly statusToConfirm = signal<MatchStatus | null>(null);
-  private readonly isStatusConfirmationOpen = signal(false);
+  protected readonly matchStatusLabel = getMatchStatusLabel;
+  protected readonly MatchStatus = MatchStatus;
+  protected readonly selectedMatchStatus = signal<MatchStatus | null>(null);
+  protected readonly statusToConfirm = signal<MatchStatus | null>(null);
+  protected readonly isStatusConfirmationOpen = signal(false);
 
-  private readonly matchStatusOptions = computed<MatchStatus[]>(() => {
+  protected readonly matchStatusOptions = computed<MatchStatus[]>(() => {
     const currentMatch = this.matchDetails();
     if (currentMatch?.matchType === MatchType.KNOCKOUT) {
       return Object.values(MatchStatus);
@@ -56,26 +64,26 @@ export class MatchDetails {
     ];
   });
 
-  private readonly goalToEdit = signal<GoalScored | null>(null);
+  protected readonly goalToEdit = signal<GoalScored | null>(null);
+  protected readonly isMatchEditDialogOpen = signal(false);
 
 
   constructor() {
-    effect(() => {
       const idFromRoute = this.route.snapshot.paramMap.get('id');
       if (idFromRoute) {
         this.matchDetailsStore.matchId.set(idFromRoute);
+        this.matchLiveDetailsService.connect();
       }
-    });
   }
 
-  private selectMatchStatus(status: MatchStatus): void {
+  protected selectMatchStatus(status: MatchStatus): void {
     const selectedStatus = this.matchStatusOptions().find((option) => option === status);
     if (selectedStatus) {
       this.selectedMatchStatus.set(selectedStatus);
     }
   }
 
-  private requestStatusChange(): void {
+  protected requestStatusChange(): void {
     const currentMatch = this.matchDetails();
     const selected = this.selectedMatchStatus() ?? currentMatch?.status;
 
@@ -85,21 +93,33 @@ export class MatchDetails {
     }
   }
 
-  private cancelStatusChange(): void {
+  protected cancelStatusChange(): void {
     this.isStatusConfirmationOpen.set(false);
     this.statusToConfirm.set(null);
     this.selectedMatchStatus.set(null);
   }
 
-  private openGoalUpdate(goal: GoalScored): void {
+  protected openGoalUpdate(goal: GoalScored): void {
     this.goalToEdit.set(goal);
   }
 
-  private closeGoalUpdate(): void {
+  protected closeGoalUpdate(): void {
     this.goalToEdit.set(null);
   }
 
-  private scoreLabel(): string {
+  protected openMatchEditDialog(): void {
+    this.isMatchEditDialogOpen.set(true);
+  }
+
+  protected closeMatchEditDialog(): void {
+    this.isMatchEditDialogOpen.set(false);
+  }
+
+  protected reloadMatch(): void {
+    this.matchDetailsStore.reload();
+  }
+
+  protected scoreLabel(): string {
     const currentMatch = this.matchDetails();
 
     if (!currentMatch) {

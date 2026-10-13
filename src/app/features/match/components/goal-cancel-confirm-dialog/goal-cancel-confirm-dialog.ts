@@ -20,10 +20,10 @@ export class GoalCancelConfirmDialog {
   readonly dismissed = output<void>();
 
   private readonly _cancelMutation = createMutation<null>();
-  private readonly loading = this._cancelMutation.loading;
-  private readonly error = this._cancelMutation.error;
+  protected readonly loading = this._cancelMutation.loading;
+  protected readonly error = this._cancelMutation.error;
 
-  private async confirmCancellation(): Promise<void> {
+  protected async confirmCancellation(): Promise<void> {
     const result = await this._cancelMutation.mutate(
       this.goalScoredService.cancelGoal(this.goalId(), this.matchId())
     );

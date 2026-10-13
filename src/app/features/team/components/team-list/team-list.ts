@@ -2,10 +2,11 @@ import { Component, computed, effect, inject, output, signal } from '@angular/co
 import { TeamStore } from '../../stores/team-store';
 import { EmptyTable } from '../../../../shared/components/empty-table/empty-table';
 import { Team } from '../../models/team';
+import { ResourceError } from '../../../../shared/components/resource-error/resource-error';
 
 @Component({
   selector: 'app-team-list',
-  imports: [EmptyTable],
+  imports: [EmptyTable, ResourceError],
   templateUrl: './team-list.html',
   styleUrls: ['./team-list.scss'],
 })
@@ -57,5 +58,9 @@ export class TeamList {
 
   openUpdateDialog(team: Team): void {
     this.onEdit.emit(team);
+  }
+
+  reloadTeams(): void {
+    this.teamStore.reload();
   }
 }

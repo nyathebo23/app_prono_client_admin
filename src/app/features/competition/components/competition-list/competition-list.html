@@ -1,4 +1,7 @@
 
+@if (error(); as resourceError) {
+  <app-resource-error [error]="resourceError" (retry)="reloadCompetitions()" />
+} @else {
 <div class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
   <table class="min-w-full text-left text-sm text-slate-700">
     <thead class="bg-slate-100 text-slate-700">
@@ -74,6 +77,7 @@
     </tbody>
   </table>
 </div>
+}
 
 @if (modalUpdateOpen()) {
   <app-competition-update-dialog (onDialogClosed)="closeUpdateDialog()" [competitionData]="competitionToEdit()!"> </app-competition-update-dialog>

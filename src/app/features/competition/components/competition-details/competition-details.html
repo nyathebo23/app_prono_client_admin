@@ -14,9 +14,7 @@
 			<div class="h-48 rounded-xl bg-slate-200"></div>
 		</div>
 	} @else if (error()) {
-		<div role="alert" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-			{{ error() }}
-		</div>
+		<app-resource-error [error]="error()" (retry)="reloadCompetition()" />
 	} @else if (competition(); as details) {
 		<header class="flex flex-wrap items-start justify-between gap-4">
 			<div>
